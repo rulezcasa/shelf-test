@@ -227,18 +227,5 @@ python app/scripts/run_panel.py [product_id] # run a panel from the CLI and prin
 python app/scripts/benchmark.py -n 20        # Drex vs LLM benchmark (writes data/benchmarks/)
 ```
 
----
-
-## Design choices and limitations
-
-- **Drex sees only decision-relevant fields.** Persona ids, labels and weights are excluded,
-  and interview personas include only what the interviewee said.
-- **Every claim is traceable.** Variant fields carry NDI page citations, and market facts link
-  to the Keenable sources they came from.
-- **Paired design.** Every persona evaluates every variant, so lift is measured within persona
-  and the bootstrap resamples personas.
-- **Caching:** Keenable responses and scenario Drex calls are cached on disk, so repeated
-  scenarios replay instantly and demos work offline once cached.
-- **Limitations:** personas are synthetic, so results are directional, not calibrated conversion
-  rates. Market synthesis depends on what the web sources say. The LLM's price positions and
+--nds on what the web sources say. The LLM's price positions and
   feature lists can be imperfect; check the linked sources.
