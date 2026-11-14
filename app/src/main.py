@@ -3,6 +3,7 @@
 Products hold variants; uploading a variant document stores the original PDF and extracts it
 with NDI right away. Extracted fields can be edited and saved back.
 """
+import json
 import string
 import threading
 from collections import defaultdict
@@ -15,6 +16,7 @@ from .models import Attribute, Persona, Product, Variant
 from .ndi.extract_variants import extract_variant
 from .ndi.ndi_client import NDIError
 
+from . import config
 from .api import runs, store
 from .model.drex_client import DrexError
 from .model.panel import load_personas
@@ -202,3 +204,42 @@ def get_run(pid: str, run_id: str) -> dict:
         return runs.get(pid, run_id)
     except KeyError:
         raise HTTPException(404, f"run {run_id} not found")
+
+
+# ---- benchmarks (Drex vs LLM; written by scripts/benchmark.py) ---------------
+
+def _bench_dirs():
+    root = config.DATA_DIR / "benchmarks"
+    return sorted((d for d in root.glob("*") if (d / "summary.json").exists()), reverse=True) if root.exists() else []
+
+
+@app.get("/api/benchmarks")
+def list_benchmarks() -> list[dict]:
+    out = []
+    for d in _bench_dirs():
+        meta = json.loads((d / "decisions.json").read_text())
+        out.append({"id": d.name, "title": meta["title"], "llm_model": meta.get("llm_model"),
+                    "drex_model": meta.get("drex_model"),
+                    "personas": len({r["persona_id"] for r in meta["decisions"]})})
+    return out
+
+
+@app.get("/api/benchmarks/{bid}")
+def get_benchmark(bid: str) -> dict:
+    dirs = _bench_dirs()
+    d = dirs[0] if bid == "latest" and dirs else config.DATA_DIR / "benchmarks" / bid
+    if not (d / "summary.json").exists() or d.parent.name != "benchmarks":
+        raise HTTPException(404, f"benchmark {bid} not found")
+    meta = json.loads((d / "decisions.json").read_text())
+    sens = {p.id: p.price_sensitivity for p in load_personas()}
+    pts: dict[tuple, dict] = {}
+    for r in meta["decisions"]:
+        if r["repeat"] == 0:
+            k = (r["persona_id"], r["variant_id"])
+            pts.setdefault(k, {"persona_id": k[0], "variant_id": k[1], "price_sensitivity": sens.get(k[0])})
+            pts[k][r["model"]] = r["p_buy"]
+            pts[k][f"{r['model']}_outcome"] = r["outcome"]
+            pts[k][f"{r['model']}_latency_ms"] = r["latency_ms"]
+    return {"id": d.name, "title": meta["title"], "llm_model": meta.get("llm_model"),
+            "drex_model": meta.get("drex_model"), "metrics": json.loads((d / "summary.json").read_text()),
+            "points": list(pts.values())}

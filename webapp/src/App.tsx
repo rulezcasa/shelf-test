@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import ProductsPage from './ProductsPage'
 import TestsPage from './TestsPage'
+import BenchmarkPage from './BenchmarkPage'
 
-// Hash routes: #/products, #/products/<pid>, #/tests, #/tests/<pid>, #/tests/<pid>/<runId>
+// Hash routes: #/benchmark, #/benchmark/<id>, #/products, #/products/<pid>, #/tests, #/tests/<pid>, #/tests/<pid>/<runId>
 function useHash() {
   const [hash, setHash] = useState(window.location.hash)
   useEffect(() => {
@@ -20,7 +21,7 @@ const go = (hash: string) => {
 
 export default function App() {
   const [section = 'products', a = null, b = null] = useHash().replace(/^#\/?/, '').split('/').filter(Boolean)
-  const tab = section === 'tests' ? 'tests' : 'products'
+  const tab = section === 'tests' ? 'tests' : section === 'benchmark' ? 'benchmark' : 'products'
 
   return (
     <div className="app">
@@ -34,12 +35,21 @@ export default function App() {
             <button className={tab === 'tests' ? 'active' : ''} onClick={() => go('#/tests')}>
               Tests
             </button>
+            <button className={tab === 'benchmark' ? 'active' : ''} onClick={() => go('#/benchmark')}>
+              Benchmark
+            </button>
           </nav>
         </div>
       </header>
 
       <main className="page">
-        {tab === 'products' ? <ProductsPage pid={a} go={go} /> : <TestsPage pid={a} runId={b} go={go} />}
+        {tab === 'products' ? (
+          <ProductsPage pid={a} go={go} />
+        ) : tab === 'tests' ? (
+          <TestsPage pid={a} runId={b} go={go} />
+        ) : (
+          <BenchmarkPage id={a} go={go} />
+        )}
       </main>
     </div>
   )
