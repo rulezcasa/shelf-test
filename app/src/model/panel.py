@@ -16,7 +16,9 @@ def load_personas(limit: int | None = None) -> list[Persona]:
     return [Persona(**p) for p in json.loads(config.PERSONAS_PATH.read_text())[:limit]]
 
 
-async def run_panel(personas: list[Persona], variants: list[Variant], on_progress=None) -> dict:
+async def run_panel(personas: list[Persona], variants: list[Variant], on_progress=None,
+                    market=None) -> dict:
+    """market: optional MarketIntel; each variant then sees its own market context."""
     """Returns {"decisions": [Decision...], "stats": {...}}. A failed pair is logged and skipped."""
     sem = asyncio.Semaphore(config.DREX_CONCURRENCY)
     pairs = [(p, v) for p in personas for v in variants]
@@ -29,7 +31,8 @@ async def run_panel(personas: list[Persona], variants: list[Variant], on_progres
             nonlocal done
             async with sem:
                 try:
-                    decisions.append(await drex_client.evaluate(http, p, v))
+                    ctx = market.decision_context(v.variant_id) if market else None
+                    decisions.append(await drex_client.evaluate(http, p, v, ctx))
                 except Exception as e:
                     log.error("pair %s x %s failed: %s", p.id, v.variant_id, e)
                     failures.append({"persona_id": p.id, "variant_id": v.variant_id, "error": str(e)})
@@ -47,6 +50,7 @@ async def run_panel(personas: list[Persona], variants: list[Variant], on_progres
             "wall_s": round(time.perf_counter() - t0, 3),
             "median_latency_ms": lat[len(lat) // 2] if lat else None,
             "model": config.DREX_MODEL,
+            "market_context": bool(market), "market_created_at": market.created_at if market else None,
             "buy_threshold": config.BUY_THRESHOLD, "consider_threshold": config.CONSIDER_THRESHOLD,
         },
     }

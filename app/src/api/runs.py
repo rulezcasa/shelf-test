@@ -29,9 +29,11 @@ def _view(run_id: str, raw: dict, personas: list[Persona]) -> dict:
     return out
 
 
-async def create(product: Product, n: int | None = None) -> dict:
+async def create(product: Product, n: int | None = None, use_market: bool = True) -> dict:
+    """use_market: give Drex the product's saved Keenable market context, if there is one."""
     personas = load_personas(n)
-    result = await run_panel(personas, product.variants)
+    market = store.load_market(product.id) if use_market else None
+    result = await run_panel(personas, product.variants, market=market)
     path = store.save_run(product.id, result, personas, product.variants)
     return _view(path.stem, json.loads(path.read_text()), personas)
 

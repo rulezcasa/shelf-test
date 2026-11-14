@@ -38,3 +38,8 @@ LLM_CONCURRENCY = int(os.getenv("LLM_CONCURRENCY", "8"))
 # USD per 1M tokens (input, output) for cost estimates; check deepinfra.com/pricing for your model
 LLM_PRICE_IN = float(os.getenv("LLM_PRICE_IN", "0.23"))
 LLM_PRICE_OUT = float(os.getenv("LLM_PRICE_OUT", "0.40"))
+
+# Keenable (live web search + page retrieval for market intelligence). Without a key the
+# keyless /public endpoints are used (1,000 req/h per IP); a free key gives 100k req/month.
+KEENABLE_API_KEY = os.getenv("KEENABLE_API_KEY", "")
+KEENABLE_BASE_URL = os.getenv("KEENABLE_BASE_URL", "https://api.keenable.ai")

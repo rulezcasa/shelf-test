@@ -469,3 +469,14 @@ Commit after each milestone. If time is short, M5 can drop the heatmap and the p
   - CLI: `python scripts/run_panel.py [product_id] [-n N]` (default: most recent product). Verified live: 3 personas × 2 variants, 6 decisions in 0.5 s.
 - **Removed** (headphone-only / mock): MarketTwin data pack loader, `baseline.py` heuristic, `MOCK_DREX`, `drex_smoke.py`. The §6.6 Drex-vs-LLM benchmark is still the planned comparison.
 - **Naming:** `Product` = a product under test (webapp/API) holding its `Variant`s; `Decision` = one persona × variant.
+
+## 13. Market intelligence (Keenable) — branch `kleenable`
+
+Before predicting, ShelfTest researches the live market for the product's category.
+
+- `app/src/market/keenable_client.py`: Keenable `POST /v1/search` and `GET /v1/fetch` (`X-API-Key` from `KEENABLE_API_KEY`; without one, the keyless `/public` endpoints with `X-Keenable-Title`). Responses are cached in `data/cache/keenable/`.
+- `app/src/market/intel.py`: the LLM plans one query per topic (competitors, prices, complaints, standard features, claims, gaps). It then runs Keenable searches limited to the past year, reads the top 3 complaint pages in full, and the LLM synthesizes a `MarketIntel` (competitors with sourced prices, price range, complaints, standard features, claims, gaps, and each variant's position). About 9 Keenable requests and 30–60 s per product.
+- Saved to `data/products/<id>/market.json`. API: `GET/POST /api/products/{pid}/market`; `POST /runs?market=true|false`.
+- When a product has research, Drex's state gets a `market` block (`MarketIntel.decision_context(variant_id)`) and the task text tells the shopper to compare against it. Runs record `stats.market_context`.
+- UI: a "Market intelligence" panel on the product page, a toggle on Run panel, and a badge on test results.
+- Headphones demo (60 personas): without market context B wins by +19.6 pts. With it, A leads by 5.4 pts: competitors at $399–$749 make the $249 A look reasonable, and B lacks multipoint, which most competitors have.

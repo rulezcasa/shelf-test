@@ -41,19 +41,21 @@ def client() -> httpx.AsyncClient:
     )
 
 
-def build_messages(persona: Persona, variant: Variant) -> list[dict]:
-    state = build_state(persona, variant)
+def build_messages(persona: Persona, variant: Variant, market: dict | None = None) -> list[dict]:
+    state = build_state(persona, variant, market)
     user = (f"Task: {state['task']}\n\nShopper persona:\n{json.dumps(state['persona'], indent=1)}\n\n"
-            f"Product page:\n{json.dumps(state['product'], indent=1)}\n\n{INSTRUCTIONS}")
+            f"Product page:\n{json.dumps(state['product'], indent=1)}\n\n"
+            + (f"Current market:\n{json.dumps(state['market'], indent=1)}\n\n" if market else "")
+            + INSTRUCTIONS)
     return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
 
 
 async def evaluate(http: httpx.AsyncClient, persona: Persona, variant: Variant,
-                   model: str | None = None) -> tuple[Decision, dict]:
+                   model: str | None = None, market: dict | None = None) -> tuple[Decision, dict]:
     """One LLM call -> (Decision, usage)."""
     payload = {
         "model": model or config.LLM_MODEL,
-        "messages": build_messages(persona, variant),
+        "messages": build_messages(persona, variant, market),
         "temperature": config.LLM_TEMPERATURE,
         "max_tokens": 300,
         "response_format": {"type": "json_object"},
@@ -96,3 +98,23 @@ def parse_answer(text: str, persona_id: str, variant_id: str, latency_ms: float)
         skip_reason_confidence=probs.get(reason, 0.0), low_confidence=conf < config.LOW_CONFIDENCE,
         latency_ms=latency_ms,
     )
+
+
+async def chat_json(messages: list[dict], max_tokens: int = 1500, model: str | None = None) -> dict:
+    """One JSON-mode chat completion on DeepInfra -> parsed object (used by market intel)."""
+    async with client() as http:
+        http.timeout = httpx.Timeout(240)
+        payload = {"model": model or config.LLM_MODEL, "messages": messages, "temperature": 0,
+                   "max_tokens": max_tokens, "response_format": {"type": "json_object"}}
+        for attempt in range(3):
+            r = await http.post("/chat/completions", json=payload)
+            if r.status_code not in (429, 500, 502, 503):
+                break
+            await _sleep(2 ** attempt)
+    if r.status_code != 200:
+        raise LLMError(f"DeepInfra {r.status_code}: {r.text[:500]}")
+    text = r.json()["choices"][0]["message"]["content"]
+    try:
+        return json.loads(text[text.index("{"): text.rindex("}") + 1])
+    except ValueError as e:
+        raise LLMError(f"unparseable LLM JSON: {text[:300]}") from e

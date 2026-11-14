@@ -61,8 +61,19 @@ def client() -> httpx.AsyncClient:
     )
 
 
-def build_state(persona: Persona, variant: Variant) -> dict:
-    return {"task": TASK, "persona": persona.decision_view(), "product": variant.as_product()}
+MARKET_TASK = (
+    " The shopper has also seen what else is on the market right now (competitor prices, features most "
+    "competitors have, common complaints in the category) and compares this product against it."
+)
+
+
+def build_state(persona: Persona, variant: Variant, market: dict | None = None) -> dict:
+    """market: MarketIntel.decision_context(variant_id) from live Keenable research, or None."""
+    state = {"task": TASK + (MARKET_TASK if market else ""), "persona": persona.decision_view(),
+             "product": variant.as_product()}
+    if market:
+        state["market"] = market
+    return state
 
 
 def outcome_for(p_buy: float) -> str:
@@ -73,9 +84,10 @@ def outcome_for(p_buy: float) -> str:
     return "reject"
 
 
-async def evaluate(http: httpx.AsyncClient, persona: Persona, variant: Variant) -> Decision:
+async def evaluate(http: httpx.AsyncClient, persona: Persona, variant: Variant,
+                   market: dict | None = None) -> Decision:
     """One Drex call -> Decision."""
-    payload = {"model": config.DREX_MODEL, "state": build_state(persona, variant), "questions": QUESTIONS}
+    payload = {"model": config.DREX_MODEL, "state": build_state(persona, variant, market), "questions": QUESTIONS}
     t0 = time.perf_counter()
     r = await http.post("/v1/systemone", json=payload)
     latency = (time.perf_counter() - t0) * 1000
