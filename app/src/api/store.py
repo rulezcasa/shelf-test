@@ -109,3 +109,17 @@ def load_run(pid: str, run_id: str) -> dict:
     if not f.exists():
         raise KeyError(run_id)
     return json.loads(f.read_text())
+
+
+# ---- market intelligence (Keenable research), one current snapshot per product ----
+
+def save_market(pid: str, intel) -> Path:
+    path = _dir(pid) / "market.json"
+    path.write_text(intel.model_dump_json(indent=1))
+    return path
+
+
+def load_market(pid: str):
+    from ..market.intel import MarketIntel
+    path = _dir(pid) / "market.json"
+    return MarketIntel.model_validate_json(path.read_text()) if path.exists() else None

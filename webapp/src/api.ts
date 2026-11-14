@@ -24,6 +24,8 @@ export type RunStats = {
   model: string
   buy_threshold: number
   consider_threshold: number
+  market_context?: boolean
+  market_created_at?: string | null
 }
 
 export type RunDecision = {
@@ -197,4 +199,39 @@ export type BenchmarkListItem = { id: string; title: string; llm_model: string; 
 export const benchApi = {
   listBenchmarks: () => req<BenchmarkListItem[]>('GET', '/benchmarks'),
   getBenchmark: (id: string) => req<Benchmark>('GET', `/benchmarks/${id}`),
+}
+
+// ---- market intelligence (Keenable) ----
+
+export type MarketIntel = {
+  product_id: string
+  created_at: string
+  category: string
+  summary: string
+  competitors: { name: string; price: number | null; currency: string | null; key_points: string[]; source_url: string | null }[]
+  price_range: { low?: number; median?: number; high?: number; currency?: string }
+  complaints: string[]
+  common_features: string[]
+  common_claims: string[]
+  gaps: string[]
+  positions: {
+    variant_id: string
+    price_position: string
+    price_percentile: number | null
+    missing_common_features: string[]
+    advantages: string[]
+    exposed_to_complaints: string[]
+    verdict: string
+  }[]
+  queries: Record<string, string>
+  sources: { id: number; title: string; url: string; topic: string; published_at: string | null }[]
+  requests_used: number
+}
+
+export const marketApi = {
+  getMarket: (pid: string) => req<MarketIntel>('GET', `/products/${pid}/market`),
+  /** Live Keenable research + LLM synthesis (~30-60 s). */
+  buildMarket: (pid: string) => req<MarketIntel>('POST', `/products/${pid}/market`),
+  createRun: (pid: string, useMarket: boolean) =>
+    req<Run>('POST', `/products/${pid}/runs?market=${useMarket}`),
 }

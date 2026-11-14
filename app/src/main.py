@@ -167,14 +167,14 @@ def list_personas() -> list[Persona]:
 # ---- panel runs (Drex) ------------------------------------------------------
 
 @app.post("/api/products/{pid}/runs", status_code=201)
-async def create_run(pid: str, n: int | None = None) -> dict:
+async def create_run(pid: str, n: int | None = None, market: bool = True) -> dict:
     """Run every persona (or the first n) against every variant through Drex; save and return it.
     ~120 calls for 60 personas x 2 variants, a few seconds."""
     p = _product(pid)
     if len(p.variants) < 2:
         raise HTTPException(422, "need at least 2 variants to run the panel")
     try:
-        run = await runs.create(p, n)
+        run = await runs.create(p, n, use_market=market)
     except DrexError as e:
         raise HTTPException(502, str(e))
     if not run["decisions"]:
@@ -243,3 +243,31 @@ def get_benchmark(bid: str) -> dict:
     return {"id": d.name, "title": meta["title"], "llm_model": meta.get("llm_model"),
             "drex_model": meta.get("drex_model"), "metrics": json.loads((d / "summary.json").read_text()),
             "points": list(pts.values())}
+
+
+# ---- market intelligence (Keenable live web research) ------------------------
+
+@app.get("/api/products/{pid}/market")
+def get_market(pid: str) -> dict:
+    _product(pid)
+    m = store.load_market(pid)
+    if not m:
+        raise HTTPException(404, "no market research yet")
+    return m.model_dump()
+
+
+@app.post("/api/products/{pid}/market", status_code=201)
+async def build_market(pid: str) -> dict:
+    """Research the live market for this product with Keenable (~9 requests) and an LLM (~30-60 s)."""
+    from .market import intel
+    from .market.keenable_client import KeenableError
+    from .model.llm_client import LLMError
+    p = _product(pid)
+    if not p.variants:
+        raise HTTPException(422, "upload at least one variant first")
+    try:
+        m = await intel.build(p)
+    except (KeenableError, LLMError) as e:
+        raise HTTPException(502, str(e))
+    store.save_market(pid, m)
+    return m.model_dump()

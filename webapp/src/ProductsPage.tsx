@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { api, type Attribute, type Product, type Run, type Variant } from './api'
+import { api, marketApi, type Attribute, type Product, type Run, type Variant } from './api'
 import ProductList from './ProductList'
 import { Panel, VariantTag, label } from './ui'
+import MarketPanel from './MarketPanel'
 
 type Pending = { key: string; name: string; error?: string }
 
@@ -55,6 +56,7 @@ function ProductDetail({ pid, go }: { pid: string; go: (hash: string) => void })
       </div>
       <VariantsPanel product={product} onChange={setProduct} />
       {n > 0 && <CompareEditor product={product} onChange={setProduct} />}
+      {n > 0 && <MarketPanel product={product} />}
       {n > 1 && <RunPanel product={product} onRunComplete={(r) => go(`#/tests/${product.id}/${r.id}`)} />}
     </div>
   )
@@ -429,6 +431,7 @@ function RunPanel({ product, onRunComplete }: { product: Product; onRunComplete:
   const [personas, setPersonas] = useState<number | null>(null)
   const [running, setRunning] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [useMarket, setUseMarket] = useState(true)
   const variants = product.variants.length
   const total = personas != null ? personas * variants : null
 
@@ -440,7 +443,7 @@ function RunPanel({ product, onRunComplete }: { product: Product; onRunComplete:
     setRunning(true)
     setError(null)
     try {
-      onRunComplete(await api.createRun(product.id))
+      onRunComplete(await marketApi.createRun(product.id, useMarket))
     } catch (e) {
       setError((e as Error).message)
       setRunning(false)
@@ -479,7 +482,10 @@ function RunPanel({ product, onRunComplete }: { product: Product; onRunComplete:
       )}
       {error && <p className="error mt">{error}</p>}
       <div className="panel-foot">
-        <span className="muted small">Each run is saved as a test under Tests.</span>
+        <label className="switch small">
+          <input type="checkbox" checked={useMarket} onChange={(e) => setUseMarket(e.target.checked)} />
+          Give Drex the live market context (if researched)
+        </label>
         <button className="btn btn-primary" disabled={running || !personas} onClick={runPanel}>
           {running ? 'Running…' : 'Run panel'}
         </button>

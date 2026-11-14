@@ -65,7 +65,12 @@ export default function TestResults(props: {
             {date && `${date} · `}
             {run.variants.length} variants · {run.personas.length} personas · {s.ok} decisions
             {s.failed > 0 && ` (${s.failed} failed)`} · {s.wall_s.toFixed(1)} s · median latency{' '}
-            {s.median_latency_ms != null ? `${Math.round(s.median_latency_ms)} ms` : '—'} · {s.model}
+            {s.median_latency_ms != null ? `${Math.round(s.median_latency_ms)} ms` : '—'} · {s.model}{' '}
+            {s.market_context ? (
+              <span className="badge market-on">with live market context</span>
+            ) : (
+              <span className="badge">no market context</span>
+            )}
           </p>
         </div>
         <div className="head-actions">
