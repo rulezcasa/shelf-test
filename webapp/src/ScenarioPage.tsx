@@ -109,7 +109,6 @@ function Lab({ pid, go }: { pid: string; go: (h: string) => void }) {
   const m = res.market
   const target = sc.target_variant ?? ''
   const targetVar = res.variants.find((v) => v.variant_id === target)
-  const basePrice = product.variants.find((v) => v.variant_id === target)
   const featureOptions = [...new Set([...m.common_features])]
   const painOptions = [...new Set([...m.complaints, ...m.gaps])]
 
@@ -118,118 +117,72 @@ function Lab({ pid, go }: { pid: string; go: (h: string) => void }) {
       <button className="btn-link back" onClick={() => go('#/scenarios')}>← Scenario lab</button>
       <div className="page-head">
         <div>
-          <h1>{product.name} · scenario lab</h1>
-          <p className="sub">
-            {res.personas.length} personas × {res.variants.length} variants through Drex, grounded in Keenable research on{' '}
-            {m.category}. Simulated purchase intent, not real conversion.
-          </p>
+          <h1>{product.name}</h1>
+          <p className="sub">What if the market changes? {res.personas.length} synthetic shoppers re-decide through Drex.</p>
         </div>
         <div className="head-actions">
           {busy && <span className="spinner" aria-label="updating" />}
-          <button className="btn" onClick={() => setSc({ ...DEFAULT, target_variant: sc.target_variant })}>Reset to today's market</button>
+          <button className="btn-link" onClick={() => setSc({ ...DEFAULT, target_variant: sc.target_variant })}>Reset</button>
         </div>
       </div>
 
       <div className="lab">
-        {/* ---------------- controls ---------------- */}
-        <div className="lab-controls">
-          <Panel title="Market changes">
-            <Control
-              title="Competitor prices"
-              value={pctLabel(sc.competitor_price_pct)}
-              sources={m.sources.prices ?? m.sources.competitors}
-              assumption={`Market today: ${money(m.price_range.low)}–${money(m.price_range.high)}, median ${money(m.price_range.median)}`}
-            >
-              <input type="range" min={-30} max={30} step={5} value={sc.competitor_price_pct}
-                onChange={(e) => set('competitor_price_pct', Number(e.target.value))} />
-              <div className="presets">
-                <button className="chip" onClick={() => set('competitor_price_pct', -10)}>Drop 10%</button>
-                <button className="chip" onClick={() => set('competitor_price_pct', 0)}>Today</button>
-              </div>
-            </Control>
+        <div className="lab-controls panel">
+          <div className="lab-section">Market</div>
+          <Control title="Competitor prices" value={pctLabel(sc.competitor_price_pct)} sources={m.sources.prices ?? m.sources.competitors}>
+            <input type="range" min={-30} max={30} step={5} value={sc.competitor_price_pct}
+              onChange={(e) => set('competitor_price_pct', Number(e.target.value))} />
+          </Control>
+          <Control title="Free shipping at competitors" sources={m.sources.prices ?? m.sources.competitors}
+            inline={<Toggle on={sc.competitor_free_shipping} onChange={(v) => set('competitor_free_shipping', v)} />} />
+          <Control title="Competitor gets poor reviews" sources={m.sources.complaints}>
+            <select className="input" value={sc.poor_reviews_competitor ?? ''}
+              onChange={(e) => set('poor_reviews_competitor', e.target.value || null)}>
+              <option value="">None</option>
+              {m.competitors.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+            </select>
+          </Control>
+          <Control title="New pain point" sources={m.sources.gaps ?? m.sources.complaints}>
+            <select className="input" value={sc.pain_point ?? ''} onChange={(e) => set('pain_point', e.target.value || null)}>
+              <option value="">None</option>
+              {painOptions.map((x) => <option key={x} value={x}>{x}</option>)}
+            </select>
+          </Control>
 
-            <Control title="Competitors add free shipping" sources={m.sources.prices ?? m.sources.competitors}
-              assumption="Assumes the named competitors start offering free shipping and returns">
-              <label className="switch">
-                <input type="checkbox" checked={sc.competitor_free_shipping}
-                  onChange={(e) => set('competitor_free_shipping', e.target.checked)} />
-                {sc.competitor_free_shipping ? 'On' : 'Off'}
-              </label>
-            </Control>
-
-            <Control title="A competitor gets poor reviews" sources={m.sources.complaints}
-              assumption={sc.poor_reviews_competitor ? `${sc.poor_reviews_competitor} reviews turn negative` : 'Pick a competitor Keenable found'}>
-              <select className="input" value={sc.poor_reviews_competitor ?? ''}
-                onChange={(e) => set('poor_reviews_competitor', e.target.value || null)}>
-                <option value="">None</option>
-                {m.competitors.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
-              </select>
-            </Control>
-
-            <Control title="New market pain point" sources={m.sources.gaps ?? m.sources.complaints}
-              assumption="From complaints and gaps Keenable found, or your own">
-              <select className="input" value={painOptions.includes(sc.pain_point ?? '') ? sc.pain_point! : sc.pain_point ? '__custom' : ''}
-                onChange={(e) => set('pain_point', e.target.value === '__custom' ? 'battery degradation after one year' : e.target.value || null)}>
-                <option value="">None</option>
-                {painOptions.map((x) => <option key={x} value={x}>{x}</option>)}
-                <option value="__custom">Custom…</option>
-              </select>
-              {sc.pain_point && !painOptions.includes(sc.pain_point) && (
-                <input className="input mt" defaultValue={sc.pain_point}
-                  onBlur={(e) => set('pain_point', e.target.value.trim() || null)} />
-              )}
-            </Control>
-          </Panel>
-
-          <Panel title="Your product" action={
+          <div className="lab-section">
+            Your product
             <select className="input select-sm" value={target} onChange={(e) => set('target_variant', e.target.value)}>
               {product.variants.map((v) => <option key={v.variant_id} value={v.variant_id}>Variant {v.variant_id}</option>)}
             </select>
-          }>
-            <Control
-              title={`Price of ${target}`}
-              value={`${pctLabel(sc.own_price_pct)}${targetVar?.price != null ? ` → ${money(targetVar.price)}` : ''}`}
-              sources={m.sources.prices}
-              assumption={`${basePrice?.product_name ?? target} today: ${money(targetVar?.price != null ? targetVar.price / (1 + sc.own_price_pct / 100) : null)} · market median ${money(m.price_range.median)}`}
-            >
-              <input type="range" min={-30} max={50} step={5} value={sc.own_price_pct}
-                onChange={(e) => set('own_price_pct', Number(e.target.value))} />
-            </Control>
-
-            <Control title={`${target} gains a feature`} sources={m.sources.features}
-              assumption="Features most competitors have, per Keenable">
-              <select className="input" value={sc.new_feature ?? ''} onChange={(e) => set('new_feature', e.target.value || null)}>
-                <option value="">None</option>
-                {featureOptions.map((x) => <option key={x} value={x}>{x}</option>)}
-              </select>
-            </Control>
-          </Panel>
+          </div>
+          <Control title="Price" sources={m.sources.prices}
+            value={sc.own_price_pct ? `${pctLabel(sc.own_price_pct)} · ${money(targetVar?.price)}` : money(targetVar?.price)}>
+            <input type="range" min={-30} max={50} step={5} value={sc.own_price_pct}
+              onChange={(e) => set('own_price_pct', Number(e.target.value))} />
+          </Control>
+          <Control title="Add a feature" sources={m.sources.features}>
+            <select className="input" value={sc.new_feature ?? ''} onChange={(e) => set('new_feature', e.target.value || null)}>
+              <option value="">None</option>
+              {featureOptions.map((x) => <option key={x} value={x}>{x}</option>)}
+            </select>
+          </Control>
         </div>
 
-        {/* ---------------- dashboard ---------------- */}
         <div className="lab-dash">
-          <Recommendation res={res} />
           <div className="lab-cards">
             {res.variants.map((v) => (
               <VariantCard key={v.variant_id} res={res} vid={v.variant_id} />
             ))}
           </div>
-          <Panel title="Which variant each persona picks" subtitle="Each dot is a persona; it moves when the scenario changes their choice."
-            action={
+          <div className="panel flow-panel">
+            <div className="flow-top">
+              <span className="control-title">Where shoppers go</span>
               <select className="input select-sm" value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
-                {GROUPS.map((g) => <option key={g} value={g}>Color by {label(g)}</option>)}
+                {GROUPS.map((g) => <option key={g} value={g}>{label(g)}</option>)}
               </select>
-            }>
+            </div>
             <FlowBoard res={res} />
-          </Panel>
-          <Panel title="Why">
-            <ul className="explain">
-              {res.explanation.map((x, i) => <li key={x + i} className="fade-in">{x}</li>)}
-            </ul>
-          </Panel>
-          <Panel title="Market assumptions" subtitle="What Drex sees, with the scenario applied">
-            <MarketTable res={res} />
-          </Panel>
+          </div>
         </div>
       </div>
       {error && <p className="error">{error}</p>}
@@ -242,25 +195,37 @@ function Lab({ pid, go }: { pid: string; go: (h: string) => void }) {
 const money = (x: number | null | undefined) => (x == null ? '—' : `$${Math.round(x).toLocaleString()}`)
 const pctLabel = (x: number) => (x === 0 ? 'No change' : `${x > 0 ? '+' : ''}${x}%`)
 
-function Control(props: { title: string; value?: string; assumption?: string; sources?: MarketSource[]; children: React.ReactNode }) {
+function Control(props: { title: string; value?: string; sources?: MarketSource[]; inline?: React.ReactNode; children?: React.ReactNode }) {
   return (
     <div className="control">
       <div className="control-head">
-        <span className="control-title">{props.title}</span>
+        <span className="control-title">
+          {props.title}
+          {props.sources && props.sources.length > 0 && (
+            <span className="src-dot" tabIndex={0} aria-label="Keenable sources">
+              i
+              <span className="src-pop">
+                <span className="src-pop-h">Keenable sources</span>
+                {props.sources.slice(0, 4).map((s) => (
+                  <a key={s.id} href={s.url} target="_blank" rel="noreferrer">{host(s.url)} · {s.title}</a>
+                ))}
+              </span>
+            </span>
+          )}
+        </span>
         {props.value && <span className="control-value tabular">{props.value}</span>}
+        {props.inline}
       </div>
       {props.children}
-      {props.assumption && <div className="muted small control-assume">{props.assumption}</div>}
-      {props.sources && props.sources.length > 0 && (
-        <div className="source-chips">
-          {props.sources.slice(0, 3).map((s) => (
-            <a key={s.id} className="source-chip" href={s.url} target="_blank" rel="noreferrer" title={s.title}>
-              {host(s.url)}
-            </a>
-          ))}
-        </div>
-      )}
     </div>
+  )
+}
+
+function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button role="switch" aria-checked={on} className={`toggle ${on ? 'on' : ''}`} onClick={() => onChange(!on)}>
+      <span />
+    </button>
   )
 }
 
@@ -294,41 +259,28 @@ function useTween(target: number, ms = 700) {
   return v
 }
 
-function Recommendation({ res }: { res: ScenarioResult }) {
-  const rec = res.current.recommended
-  const flipped = rec !== res.baseline.recommended
-  const v = res.variants.find((x) => x.variant_id === rec)
-  return (
-    <div key={rec} className={`rec-banner ${flipped ? 'flipped' : ''}`}>
-      <div className="muted small">Recommended variant</div>
-      <div className="rec-main">
-        <VariantTag id={rec} /> <strong>{v?.name ?? rec}</strong>
-        {flipped && <span className="badge warn">changed from {res.baseline.recommended}</span>}
-      </div>
-    </div>
-  )
-}
-
 function VariantCard({ res, vid }: { res: ScenarioResult; vid: string }) {
   const c = useTween(res.current.conversion[vid] ?? 0)
   const pick = useTween(res.current.pick_share[vid] ?? 0)
   const d = (res.current.conversion[vid] ?? 0) - (res.baseline.conversion[vid] ?? 0)
   const v = res.variants.find((x) => x.variant_id === vid)
-  const top = Object.entries(res.current.skip_reasons[vid] ?? {})[0]
+  const best = res.current.recommended === vid
+  const flipped = best && res.baseline.recommended !== vid
   return (
-    <div className={`lab-card ${res.current.recommended === vid ? 'best' : ''}`}>
+    <div className={`lab-card ${best ? 'best' : ''}`}>
       <div className="lab-card-head">
         <VariantTag id={vid} /> <span className="doc-name">{v?.name}</span>
-        <span className="muted small tabular" style={{ marginLeft: 'auto' }}>{money(v?.price)}</span>
+        {best && <span key={String(flipped)} className={`rec-pill ${flipped ? 'flip' : ''}`}>{flipped ? 'New winner' : 'Recommended'}</span>}
       </div>
-      <div className="lab-big tabular">{(c * 100).toFixed(1)}%</div>
-      <div className="small muted">mean purchase propensity</div>
-      <div className={`small tabular ${d > 0.0005 ? 'pos' : d < -0.0005 ? 'neg' : 'muted'}`}>
-        {Math.abs(d) < 0.0005 ? 'same as today' : `${d > 0 ? '+' : '−'}${Math.abs(d * 100).toFixed(1)} pts vs today`}
+      <div className="lab-big tabular">{(c * 100).toFixed(1)}<span className="lab-unit">%</span></div>
+      <div className="lab-meta">
+        <span className={`tabular ${d > 0.0005 ? 'pos' : d < -0.0005 ? 'neg' : 'muted'}`}>
+          {Math.abs(d) < 0.0005 ? 'No change' : `${d > 0 ? '▲' : '▼'} ${Math.abs(d * 100).toFixed(1)} pts`}
+        </span>
+        <span className="muted">{money(v?.price)}</span>
       </div>
-      <div className="bar-track mt"><div className="bar-fill" style={{ width: `${pick * 100}%` }} /></div>
-      <div className="small muted">{Math.round(pick * 100)}% of personas pick it</div>
-      {top && <div className="small mt">Top skip reason: <strong>{label(top[0])}</strong> ({Math.round(top[1] * 100)}%)</div>}
+      <div className="bar-track"><div className="bar-fill" style={{ width: `${pick * 100}%` }} /></div>
+      <div className="small muted">{Math.round(pick * 100)}% of shoppers pick it</div>
     </div>
   )
 }
@@ -396,36 +348,6 @@ function FlowBoard({ res }: { res: ScenarioResult }) {
         ))}
         <span className="muted"><span className="legend-dot ring" /> moved vs today</span>
       </div>
-    </div>
-  )
-}
-
-function MarketTable({ res }: { res: ScenarioResult }) {
-  const sc = res.scenario
-  const f = 1 + sc.competitor_price_pct / 100
-  return (
-    <div className="table-wrap">
-      <table className="compare tabular">
-        <thead>
-          <tr><th>Competitor</th><th>Price today</th><th>In scenario</th><th>Notes</th><th>Source</th></tr>
-        </thead>
-        <tbody>
-          {res.market.competitors.map((c) => (
-            <tr key={c.name}>
-              <td>{c.name}</td>
-              <td>{money(c.price)}</td>
-              <td className={sc.competitor_price_pct ? (f < 1 ? 'pos' : 'neg') : ''}>{c.price != null ? money(c.price * f) : '—'}</td>
-              <td className="small">
-                {[sc.competitor_free_shipping && 'free shipping', sc.poor_reviews_competitor === c.name && 'poor reviews']
-                  .filter(Boolean).join(', ') || <span className="muted">—</span>}
-              </td>
-              <td className="small">{c.source_url ? <a href={c.source_url} target="_blank" rel="noreferrer">{host(c.source_url)}</a> : '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {sc.pain_point && <p className="small mt">Emerging concern added to the market: <strong>{sc.pain_point}</strong></p>}
-      <p className="muted small mt">Keenable research from {new Date(res.market.created_at).toLocaleString()}.</p>
     </div>
   )
 }
