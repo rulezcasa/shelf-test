@@ -28,3 +28,13 @@ BUY_THRESHOLD = float(os.getenv("BUY_THRESHOLD", "0.6"))        # p_buy >= this 
 CONSIDER_THRESHOLD = float(os.getenv("CONSIDER_THRESHOLD", "0.35"))  # >= this -> "consider", else "reject"
 LOW_CONFIDENCE = float(os.getenv("LOW_CONFIDENCE", "0.6"))
 DREX_CONCURRENCY = int(os.getenv("DREX_CONCURRENCY", "8"))
+
+# LLM decision model on DeepInfra (OpenAI-compatible), benchmarked against Drex
+DEEPINFRA_API_KEY = os.getenv("DEEPINFRA_API_KEY", "")
+DEEPINFRA_BASE_URL = os.getenv("DEEPINFRA_BASE_URL", "https://api.deepinfra.com/v1/openai")
+LLM_MODEL = os.getenv("LLM_MODEL", "meta-llama/Llama-3.3-70B-Instruct-Turbo")
+LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0"))
+LLM_CONCURRENCY = int(os.getenv("LLM_CONCURRENCY", "8"))
+# USD per 1M tokens (input, output) for cost estimates; check deepinfra.com/pricing for your model
+LLM_PRICE_IN = float(os.getenv("LLM_PRICE_IN", "0.23"))
+LLM_PRICE_OUT = float(os.getenv("LLM_PRICE_OUT", "0.40"))
