@@ -271,3 +271,53 @@ async def build_market(pid: str) -> dict:
         raise HTTPException(502, str(e))
     store.save_market(pid, m)
     return m.model_dump()
+
+
+# ---- what-if scenarios on top of market intelligence --------------------------
+
+class ScenarioIn(BaseModel):
+    scenario: dict = {}
+    group_by: str = "shopping_style"
+
+
+@app.post("/api/products/{pid}/scenario")
+async def run_scenario(pid: str, body: ScenarioIn) -> dict:
+    """Apply a what-if scenario and run the panel through Drex (cached; first run ~5 s).
+    Returns the scenario and the baseline (today's market) so the UI can animate the difference."""
+    from .market import scenario as scn
+    p = _product(pid)
+    intel = store.load_market(pid)
+    if not intel:
+        raise HTTPException(422, "research the market first")
+    if len(p.variants) < 2:
+        raise HTTPException(422, "need at least 2 variants")
+    sc = scn.Scenario(**body.scenario)
+    personas = load_personas()
+    vids = [v.variant_id for v in p.variants]
+    try:
+        base_d = await scn.run(personas, p.variants, intel, scn.Scenario(target_variant=sc.target_variant))
+        cur_d = base_d if sc.is_baseline() else await scn.run(personas, p.variants, intel, sc)
+    except DrexError as e:
+        raise HTTPException(502, str(e))
+    if not cur_d:
+        raise HTTPException(502, "every Drex call failed")
+    base, cur = scn.summarize(base_d, personas, vids), scn.summarize(cur_d, personas, vids)
+    by_topic: dict[str, list] = {}
+    for s in intel.sources:
+        by_topic.setdefault(s["topic"], []).append(s)
+    return {
+        "scenario": sc.model_dump(),
+        "variants": [{"variant_id": v.variant_id, "name": v.product_name, "price": scn.variant_price(v)}
+                     for v in scn.apply_variants(p.variants, sc)],
+        "current": cur,
+        "baseline": base,
+        "explanation": scn.explain(sc, cur, base, personas, body.group_by),
+        "personas": [{"id": x.id, "label": x.label, "group": getattr(x, body.group_by, "")} for x in personas],
+        "market": {
+            "category": intel.category, "created_at": intel.created_at,
+            "competitors": [c.model_dump() for c in intel.competitors],
+            "price_range": intel.price_range, "complaints": intel.complaints,
+            "common_features": intel.common_features, "gaps": intel.gaps,
+            "sources": by_topic,
+        },
+    }

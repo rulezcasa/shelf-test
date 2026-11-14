@@ -235,3 +235,50 @@ export const marketApi = {
   createRun: (pid: string, useMarket: boolean) =>
     req<Run>('POST', `/products/${pid}/runs?market=${useMarket}`),
 }
+
+// ---- what-if scenarios (market intel + Drex) ----
+
+export type Scenario = {
+  competitor_price_pct: number
+  competitor_free_shipping: boolean
+  own_price_pct: number
+  target_variant: string | null
+  new_feature: string | null
+  poor_reviews_competitor: string | null
+  pain_point: string | null
+}
+
+export type ScenarioSummary = {
+  conversion: Record<string, number>
+  buy_share: Record<string, number>
+  pick_share: Record<string, number>
+  recommended: string
+  picks: Record<string, string>
+  skip_reasons: Record<string, Record<string, number>>
+}
+
+export type MarketSource = { id: number; title: string; url: string; topic: string; published_at: string | null }
+
+export type ScenarioResult = {
+  scenario: Scenario
+  variants: { variant_id: string; name: string | null; price: number | null }[]
+  current: ScenarioSummary
+  baseline: ScenarioSummary
+  explanation: string[]
+  personas: { id: string; label: string; group: string }[]
+  market: {
+    category: string
+    created_at: string
+    competitors: MarketIntel['competitors']
+    price_range: MarketIntel['price_range']
+    complaints: string[]
+    common_features: string[]
+    gaps: string[]
+    sources: Record<string, MarketSource[]>
+  }
+}
+
+export const scenarioApi = {
+  run: (pid: string, scenario: Partial<Scenario>, groupBy: string) =>
+    req<ScenarioResult>('POST', `/products/${pid}/scenario`, { scenario, group_by: groupBy }),
+}

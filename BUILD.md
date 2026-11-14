@@ -480,3 +480,12 @@ Before predicting, ShelfTest researches the live market for the product's catego
 - When a product has research, Drex's state gets a `market` block (`MarketIntel.decision_context(variant_id)`) and the task text tells the shopper to compare against it. Runs record `stats.market_context`.
 - UI: a "Market intelligence" panel on the product page, a toggle on Run panel, and a badge on test results.
 - Headphones demo (60 personas): without market context B wins by +19.6 pts. With it, A leads by 5.4 pts: competitors at $399–$749 make the $249 A look reasonable, and B lacks multipoint, which most competitors have.
+
+## 14. Scenario lab (branch `dynamicMarket`)
+
+What-if scenarios on top of the Keenable market research, at `#/scenarios/<pid>`.
+
+- `app/src/market/scenario.py` takes a `Scenario`: competitor price % change, competitors add free shipping, own price % on a target variant, a new feature on the target variant, a competitor with poor reviews, and a new market pain point. It changes the target variant's attributes and each variant's market context (it rescales competitor prices and the price range, recomputes the price percentile from actual prices, and adds `recent_market_changes`). Then it runs all personas × variants through Drex. Answers are cached on disk by request hash (`data/cache/drex_scenarios/`), so a slider position you've tried before replays instantly.
+- `POST /api/products/{pid}/scenario {scenario, group_by}` returns, for both the scenario and the baseline (today's market): mean propensity, the share of personas picking each variant, each persona's pick (the highest-P(buy) variant they don't reject, otherwise "none"), the recommendation and skip reasons. It also returns a template explanation of what changed, plus the market's Keenable sources grouped by topic.
+- UI: sliders and selects, each with the market assumption and Keenable source chips. The dashboard shows a recommendation banner (it highlights when the pick flips), tweened conversion cards, a persona board where dots animate between the variant columns and "Walk away" (ringed if they moved vs today, colored by the chosen segment), the explanation, and a table of market assumptions.
+- Demo: raising A's price by 40% flips the recommendation to B (A −17.5 pts; 11 personas move to B; price goes from 12% to 47% of A's skip reasons). Competitors at −10% plus free shipping sends 6 personas from A to walking away and makes shipping/returns 41% of A's skip reasons.
