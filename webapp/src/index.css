@@ -300,3 +300,28 @@ tr.detail td { background: #fafbfc; white-space: normal; padding: 16px 16px 20px
   .topbar-inner { gap: 16px; padding: 0 16px; }
   .page { padding: 24px 16px 64px; }
 }
+
+/* ---------- benchmark ---------- */
+:root { --bench-drex: #13897f; --bench-llm: #e07a1f; }
+.bench-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 860px) { .bench-grid { grid-template-columns: 1fr; } .run-grid { grid-template-columns: repeat(2, 1fr); } }
+.chart { width: 100%; height: auto; display: block; }
+.chart.square { max-width: 320px; margin: 0 auto; }
+.chart .grid { stroke: var(--border); stroke-width: 1; }
+.chart .diag { stroke: var(--border-strong); stroke-dasharray: 4 4; }
+.chart .whisker { stroke: var(--text); stroke-width: 1.5; }
+.chart .tick { font-size: 11px; fill: var(--muted); }
+.chart .tick.strong { fill: var(--text-2); font-weight: 500; }
+.chart .dot { opacity: 0.75; }
+.dot.vA { fill: var(--va); background: var(--va); }
+.dot.vB { fill: var(--vb); background: var(--vb); }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-top: 10px; font-size: 12px; color: var(--text-2); }
+.legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; }
+.best-cell { color: var(--pos); font-weight: 600; }
+.hbars { display: flex; flex-direction: column; gap: 12px; }
+.hbar-row { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; }
+.hbar-label { font-size: 13px; color: var(--text-2); }
+.hbar-tracks { display: flex; flex-direction: column; gap: 3px; }
+.hbar-track { display: flex; align-items: center; gap: 8px; }
+.hbar { height: 10px; border-radius: 3px; min-width: 2px; max-width: calc(100% - 44px); }
+.bench-select { width: auto; max-width: 260px; }

@@ -148,3 +148,53 @@ export const api = {
   latestRun: (pid: string) => req<Run>('GET', `/products/${pid}/runs/latest`),
   getRun: (pid: string, runId: string) => req<Run>('GET', `/products/${pid}/runs/${runId}`),
 }
+
+// ---- Drex vs LLM benchmark (scripts/benchmark.py) ----
+
+export type BenchmarkModel = {
+  summary: { variant_id: string; propensity: number; ci_low: number; ci_high: number; buy_share: number }[]
+  lift: { variant_id: string; control: string; abs_lift: number; rel_lift: number; ci_low: number; ci_high: number; prob_better: number }[]
+  latency_median_ms: number
+  latency_p95_ms: number
+  wall_s: number
+  throughput_per_s: number
+  calls: number
+  failed: number
+  tokens_in: number | null
+  tokens_out: number | null
+  cost_usd: number | null
+  repeat_std: number | null
+  skip_reasons: Record<string, number>
+}
+
+export type Benchmark = {
+  id: string
+  title: string
+  llm_model: string
+  drex_model: string
+  metrics: {
+    drex: BenchmarkModel
+    llm: BenchmarkModel
+    agreement: {
+      p_buy_pearson: number
+      p_buy_spearman: number
+      mean_abs_diff: number
+      outcome_agreement: number
+      preferred_variant_agreement: number
+    }
+  }
+  points: {
+    persona_id: string
+    variant_id: string
+    price_sensitivity: string | null
+    drex?: number
+    llm?: number
+  }[]
+}
+
+export type BenchmarkListItem = { id: string; title: string; llm_model: string; drex_model: string; personas: number }
+
+export const benchApi = {
+  listBenchmarks: () => req<BenchmarkListItem[]>('GET', '/benchmarks'),
+  getBenchmark: (id: string) => req<Benchmark>('GET', `/benchmarks/${id}`),
+}
