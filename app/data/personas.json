@@ -1,0 +1,1420 @@
+[
+  {
+    "id": "P001",
+    "label": "21, suburban dental hygienist, roommates",
+    "age_band": "18-24",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-Northeast",
+    "household": "roommates",
+    "income_band": "35-75k",
+    "occupation": "dental hygienist",
+    "tech_savviness": "high",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "price",
+      "features"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 21-year-old male dental hygienist in a suburban area of the US Northeast who lives with roommates. Household income $35\u201375k; high comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, price and features. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P002",
+    "label": "30, urban software developer, couple",
+    "age_band": "25-34",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-West",
+    "household": "couple",
+    "income_band": "75-150k",
+    "occupation": "software developer",
+    "tech_savviness": "low",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "quality",
+      "durability"
+    ],
+    "dealbreakers": [],
+    "bio": "A 30-year-old male software developer in an urban area of the US West who lives with a partner. Household income $75\u2013150k; low comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, quality and durability.",
+    "weight": 1.0
+  },
+  {
+    "id": "P003",
+    "label": "36, urban VP of operations, couple",
+    "age_band": "35-44",
+    "gender": "female",
+    "location_type": "urban",
+    "region": "US-Northeast",
+    "household": "couple",
+    "income_band": "150k+",
+    "occupation": "VP of operations",
+    "tech_savviness": "medium",
+    "shopping_style": "researcher",
+    "price_sensitivity": "low",
+    "priorities": [
+      "features",
+      "support",
+      "design"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 36-year-old female VP of operations in an urban area of the US Northeast who lives with a partner. Household income over $150k; medium comfort with technology. Researches purchases carefully, reading specs and reviews. Cares most about features, support and design. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P004",
+    "label": "54, rural physician, roommates",
+    "age_band": "45-54",
+    "gender": "male",
+    "location_type": "rural",
+    "region": "US-South",
+    "household": "roommates",
+    "income_band": "150k+",
+    "occupation": "physician",
+    "tech_savviness": "high",
+    "shopping_style": "convenience_first",
+    "price_sensitivity": "low",
+    "priorities": [
+      "convenience",
+      "support",
+      "sustainability"
+    ],
+    "dealbreakers": [],
+    "bio": "A 54-year-old male physician in a rural area of the US South who lives with roommates. Household income over $150k; high comfort with technology. Values convenience and will pay to avoid hassle. Cares most about convenience, support and sustainability.",
+    "weight": 1.0
+  },
+  {
+    "id": "P005",
+    "label": "62, suburban police officer, single",
+    "age_band": "55-64",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "single",
+    "income_band": "35-75k",
+    "occupation": "police officer",
+    "tech_savviness": "low",
+    "shopping_style": "convenience_first",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "convenience",
+      "brand",
+      "durability"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 62-year-old female police officer in a suburban area of the US West who lives alone. Household income $35\u201375k; low comfort with technology. Values convenience and will pay to avoid hassle. Cares most about convenience, brand and durability. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P006",
+    "label": "65, suburban retired, single",
+    "age_band": "65+",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-Northeast",
+    "household": "single",
+    "income_band": "75-150k",
+    "occupation": "retired",
+    "tech_savviness": "low",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "price",
+      "features"
+    ],
+    "dealbreakers": [
+      "no free returns"
+    ],
+    "bio": "A 65-year-old male retiree in a suburban area of the US Northeast who lives alone. Household income $75\u2013150k; low comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, price and features. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P007",
+    "label": "18, urban office manager, roommates",
+    "age_band": "18-24",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-South",
+    "household": "roommates",
+    "income_band": "35-75k",
+    "occupation": "office manager",
+    "tech_savviness": "high",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "features",
+      "quality"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "An 18-year-old male office manager in an urban area of the US South who lives with roommates. Household income $35\u201375k; high comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, features and quality. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P008",
+    "label": "30, suburban police officer, roommates",
+    "age_band": "25-34",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "roommates",
+    "income_band": "35-75k",
+    "occupation": "police officer",
+    "tech_savviness": "high",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "price",
+      "convenience"
+    ],
+    "dealbreakers": [
+      "no warranty",
+      "slow shipping"
+    ],
+    "bio": "A 30-year-old male police officer in a suburban area of the US West who lives with roommates. Household income $35\u201375k; high comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, price and convenience. Won't buy anything without a warranty. Won't wait on slow shipping.",
+    "weight": 1.0
+  },
+  {
+    "id": "P009",
+    "label": "44, suburban physician, family with kids",
+    "age_band": "35-44",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "family_with_kids",
+    "income_band": "150k+",
+    "occupation": "physician",
+    "tech_savviness": "medium",
+    "shopping_style": "impulse",
+    "price_sensitivity": "low",
+    "priorities": [
+      "design",
+      "features",
+      "convenience"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 44-year-old female physician in a suburban area of the US West who lives with a partner and kids. Household income over $150k; medium comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, features and convenience. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P010",
+    "label": "47, suburban electrician, family with kids",
+    "age_band": "45-54",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-Midwest",
+    "household": "family_with_kids",
+    "income_band": "35-75k",
+    "occupation": "electrician",
+    "tech_savviness": "medium",
+    "shopping_style": "researcher",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "features",
+      "sustainability",
+      "brand"
+    ],
+    "dealbreakers": [
+      "no free returns"
+    ],
+    "bio": "A 47-year-old female electrician in a suburban area of the US Midwest who lives with a partner and kids. Household income $35\u201375k; medium comfort with technology. Researches purchases carefully, reading specs and reviews. Cares most about features, sustainability and brand. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P011",
+    "label": "61, rural truck driver, couple",
+    "age_band": "55-64",
+    "gender": "female",
+    "location_type": "rural",
+    "region": "US-South",
+    "household": "couple",
+    "income_band": "35-75k",
+    "occupation": "truck driver",
+    "tech_savviness": "medium",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "price",
+      "support"
+    ],
+    "dealbreakers": [
+      "no free returns",
+      "poor reviews"
+    ],
+    "bio": "A 61-year-old female truck driver in a rural area of the US South who lives with a partner. Household income $35\u201375k; medium comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, price and support. Won't buy without free returns. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P012",
+    "label": "78, urban rideshare driver, couple",
+    "age_band": "65+",
+    "gender": "female",
+    "location_type": "urban",
+    "region": "US-South",
+    "household": "couple",
+    "income_band": "<35k",
+    "occupation": "rideshare driver",
+    "tech_savviness": "medium",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "brand",
+      "support"
+    ],
+    "dealbreakers": [
+      "poor reviews",
+      "slow shipping"
+    ],
+    "bio": "A 78-year-old female rideshare driver in an urban area of the US South who lives with a partner. Household income under $35k; medium comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, brand and support. Skips anything with weak reviews. Won't wait on slow shipping.",
+    "weight": 1.0
+  },
+  {
+    "id": "P013",
+    "label": "22, urban college student, roommates",
+    "age_band": "18-24",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-Northeast",
+    "household": "roommates",
+    "income_band": "<35k",
+    "occupation": "college student",
+    "tech_savviness": "high",
+    "shopping_style": "convenience_first",
+    "price_sensitivity": "high",
+    "priorities": [
+      "convenience",
+      "price",
+      "brand"
+    ],
+    "dealbreakers": [
+      "complicated setup"
+    ],
+    "bio": "A 22-year-old male college student in an urban area of the US Northeast who lives with roommates. Household income under $35k; high comfort with technology. Values convenience and will pay to avoid hassle. Cares most about convenience, price and brand. Avoids products that are complicated to set up.",
+    "weight": 1.0
+  },
+  {
+    "id": "P014",
+    "label": "32, suburban home health aide, single",
+    "age_band": "25-34",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "single",
+    "income_band": "<35k",
+    "occupation": "home health aide",
+    "tech_savviness": "high",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "sustainability",
+      "durability"
+    ],
+    "dealbreakers": [],
+    "bio": "A 32-year-old male home health aide in a suburban area of the US West who lives alone. Household income under $35k; high comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, sustainability and durability.",
+    "weight": 1.0
+  },
+  {
+    "id": "P015",
+    "label": "37, urban civil engineer, couple",
+    "age_band": "35-44",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-West",
+    "household": "couple",
+    "income_band": "75-150k",
+    "occupation": "civil engineer",
+    "tech_savviness": "low",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "brand",
+      "quality"
+    ],
+    "dealbreakers": [
+      "poor reviews"
+    ],
+    "bio": "A 37-year-old male civil engineer in an urban area of the US West who lives with a partner. Household income $75\u2013150k; low comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, brand and quality. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P016",
+    "label": "46, suburban software engineer, family with kids",
+    "age_band": "45-54",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-Midwest",
+    "household": "family_with_kids",
+    "income_band": "150k+",
+    "occupation": "software engineer",
+    "tech_savviness": "high",
+    "shopping_style": "convenience_first",
+    "price_sensitivity": "low",
+    "priorities": [
+      "convenience",
+      "brand",
+      "features"
+    ],
+    "dealbreakers": [
+      "poor reviews"
+    ],
+    "bio": "A 46-year-old male software engineer in a suburban area of the US Midwest who lives with a partner and kids. Household income over $150k; high comfort with technology. Values convenience and will pay to avoid hassle. Cares most about convenience, brand and features. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P017",
+    "label": "64, suburban bookkeeper, couple",
+    "age_band": "55-64",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-Northeast",
+    "household": "couple",
+    "income_band": "35-75k",
+    "occupation": "bookkeeper",
+    "tech_savviness": "low",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "price",
+      "support"
+    ],
+    "dealbreakers": [
+      "slow shipping",
+      "poor reviews"
+    ],
+    "bio": "A 64-year-old male bookkeeper in a suburban area of the US Northeast who lives with a partner. Household income $35\u201375k; low comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, price and support. Won't wait on slow shipping. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P018",
+    "label": "71, suburban retired, retiree",
+    "age_band": "65+",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-South",
+    "household": "retiree",
+    "income_band": "<35k",
+    "occupation": "retired",
+    "tech_savviness": "medium",
+    "shopping_style": "eco_conscious",
+    "price_sensitivity": "high",
+    "priorities": [
+      "sustainability",
+      "price",
+      "durability"
+    ],
+    "dealbreakers": [
+      "complicated setup"
+    ],
+    "bio": "A 71-year-old female retiree in a suburban area of the US South who is retired and lives with a spouse. Household income under $35k; medium comfort with technology. Prefers sustainable products and avoids wasteful brands. Cares most about sustainability, price and durability. Avoids products that are complicated to set up.",
+    "weight": 1.0
+  },
+  {
+    "id": "P019",
+    "label": "23, rural office manager, roommates",
+    "age_band": "18-24",
+    "gender": "male",
+    "location_type": "rural",
+    "region": "US-West",
+    "household": "roommates",
+    "income_band": "35-75k",
+    "occupation": "office manager",
+    "tech_savviness": "high",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "durability",
+      "features"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 23-year-old male office manager in a rural area of the US West who lives with roommates. Household income $35\u201375k; high comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, durability and features. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P020",
+    "label": "34, urban accountant, roommates",
+    "age_band": "25-34",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-Northeast",
+    "household": "roommates",
+    "income_band": "75-150k",
+    "occupation": "accountant",
+    "tech_savviness": "medium",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "durability",
+      "convenience"
+    ],
+    "dealbreakers": [
+      "poor reviews"
+    ],
+    "bio": "A 34-year-old male accountant in an urban area of the US Northeast who lives with roommates. Household income $75\u2013150k; medium comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, durability and convenience. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P021",
+    "label": "35, urban warehouse worker, couple",
+    "age_band": "35-44",
+    "gender": "female",
+    "location_type": "urban",
+    "region": "US-West",
+    "household": "couple",
+    "income_band": "<35k",
+    "occupation": "warehouse worker",
+    "tech_savviness": "medium",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "design",
+      "sustainability"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 35-year-old female warehouse worker in an urban area of the US West who lives with a partner. Household income under $35k; medium comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, design and sustainability. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P022",
+    "label": "49, urban pharmacist, single",
+    "age_band": "45-54",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-Northeast",
+    "household": "single",
+    "income_band": "75-150k",
+    "occupation": "pharmacist",
+    "tech_savviness": "high",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "quality",
+      "durability"
+    ],
+    "dealbreakers": [],
+    "bio": "A 49-year-old male pharmacist in an urban area of the US Northeast who lives alone. Household income $75\u2013150k; high comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, quality and durability.",
+    "weight": 1.0
+  },
+  {
+    "id": "P023",
+    "label": "60, urban dental hygienist, retiree",
+    "age_band": "55-64",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-South",
+    "household": "retiree",
+    "income_band": "35-75k",
+    "occupation": "dental hygienist",
+    "tech_savviness": "low",
+    "shopping_style": "researcher",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "features",
+      "quality",
+      "brand"
+    ],
+    "dealbreakers": [],
+    "bio": "A 60-year-old male dental hygienist in an urban area of the US South who is retired and lives with a spouse. Household income $35\u201375k; low comfort with technology. Researches purchases carefully, reading specs and reviews. Cares most about features, quality and brand.",
+    "weight": 1.0
+  },
+  {
+    "id": "P024",
+    "label": "70, rural dentist, retiree",
+    "age_band": "65+",
+    "gender": "male",
+    "location_type": "rural",
+    "region": "US-South",
+    "household": "retiree",
+    "income_band": "150k+",
+    "occupation": "dentist",
+    "tech_savviness": "medium",
+    "shopping_style": "impulse",
+    "price_sensitivity": "low",
+    "priorities": [
+      "design",
+      "durability",
+      "quality"
+    ],
+    "dealbreakers": [
+      "slow shipping"
+    ],
+    "bio": "A 70-year-old male dentist in a rural area of the US South who is retired and lives with a spouse. Household income over $150k; medium comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, durability and quality. Won't wait on slow shipping.",
+    "weight": 1.0
+  },
+  {
+    "id": "P025",
+    "label": "21, rural electrician, roommates",
+    "age_band": "18-24",
+    "gender": "female",
+    "location_type": "rural",
+    "region": "US-South",
+    "household": "roommates",
+    "income_band": "35-75k",
+    "occupation": "electrician",
+    "tech_savviness": "high",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "features",
+      "support"
+    ],
+    "dealbreakers": [
+      "no free returns"
+    ],
+    "bio": "A 21-year-old female electrician in a rural area of the US South who lives with roommates. Household income $35\u201375k; high comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, features and support. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P026",
+    "label": "29, suburban student, family with kids",
+    "age_band": "25-34",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-South",
+    "household": "family_with_kids",
+    "income_band": "<35k",
+    "occupation": "student",
+    "tech_savviness": "high",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "durability",
+      "quality"
+    ],
+    "dealbreakers": [],
+    "bio": "A 29-year-old male student in a suburban area of the US South who lives with a partner and kids. Household income under $35k; high comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, durability and quality.",
+    "weight": 1.0
+  },
+  {
+    "id": "P027",
+    "label": "35, rural dental hygienist, family with kids",
+    "age_band": "35-44",
+    "gender": "male",
+    "location_type": "rural",
+    "region": "US-Midwest",
+    "household": "family_with_kids",
+    "income_band": "35-75k",
+    "occupation": "dental hygienist",
+    "tech_savviness": "medium",
+    "shopping_style": "eco_conscious",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "sustainability",
+      "price",
+      "design"
+    ],
+    "dealbreakers": [
+      "slow shipping",
+      "no free returns"
+    ],
+    "bio": "A 35-year-old male dental hygienist in a rural area of the US Midwest who lives with a partner and kids. Household income $35\u201375k; medium comfort with technology. Prefers sustainable products and avoids wasteful brands. Cares most about sustainability, price and design. Won't wait on slow shipping. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P028",
+    "label": "51, suburban truck driver, family with kids",
+    "age_band": "45-54",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-Midwest",
+    "household": "family_with_kids",
+    "income_band": "35-75k",
+    "occupation": "truck driver",
+    "tech_savviness": "low",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "sustainability",
+      "durability"
+    ],
+    "dealbreakers": [
+      "slow shipping"
+    ],
+    "bio": "A 51-year-old female truck driver in a suburban area of the US Midwest who lives with a partner and kids. Household income $35\u201375k; low comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, sustainability and durability. Won't wait on slow shipping.",
+    "weight": 1.0
+  },
+  {
+    "id": "P029",
+    "label": "59, urban civil engineer, single",
+    "age_band": "55-64",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-South",
+    "household": "single",
+    "income_band": "75-150k",
+    "occupation": "civil engineer",
+    "tech_savviness": "high",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "features",
+      "durability"
+    ],
+    "dealbreakers": [
+      "no warranty",
+      "slow shipping"
+    ],
+    "bio": "A 59-year-old male civil engineer in an urban area of the US South who lives alone. Household income $75\u2013150k; high comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, features and durability. Won't buy anything without a warranty. Won't wait on slow shipping.",
+    "weight": 1.0
+  },
+  {
+    "id": "P030",
+    "label": "66, suburban physical therapist, couple",
+    "age_band": "65+",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "couple",
+    "income_band": "75-150k",
+    "occupation": "physical therapist",
+    "tech_savviness": "medium",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "durability",
+      "convenience"
+    ],
+    "dealbreakers": [
+      "subscription required",
+      "no free returns"
+    ],
+    "bio": "A 66-year-old female physical therapist in a suburban area of the US West who lives with a partner. Household income $75\u2013150k; medium comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, durability and convenience. Refuses products that require a subscription. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P031",
+    "label": "22, suburban dental hygienist, roommates",
+    "age_band": "18-24",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-Midwest",
+    "household": "roommates",
+    "income_band": "35-75k",
+    "occupation": "dental hygienist",
+    "tech_savviness": "low",
+    "shopping_style": "convenience_first",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "convenience",
+      "brand",
+      "support"
+    ],
+    "dealbreakers": [
+      "complicated setup"
+    ],
+    "bio": "A 22-year-old male dental hygienist in a suburban area of the US Midwest who lives with roommates. Household income $35\u201375k; low comfort with technology. Values convenience and will pay to avoid hassle. Cares most about convenience, brand and support. Avoids products that are complicated to set up.",
+    "weight": 1.0
+  },
+  {
+    "id": "P032",
+    "label": "26, urban dentist, single",
+    "age_band": "25-34",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-South",
+    "household": "single",
+    "income_band": "150k+",
+    "occupation": "dentist",
+    "tech_savviness": "high",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "quality",
+      "convenience"
+    ],
+    "dealbreakers": [
+      "no free returns",
+      "poor reviews"
+    ],
+    "bio": "A 26-year-old male dentist in an urban area of the US South who lives alone. Household income over $150k; high comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, quality and convenience. Won't buy without free returns. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P033",
+    "label": "41, suburban home health aide, couple",
+    "age_band": "35-44",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "couple",
+    "income_band": "<35k",
+    "occupation": "home health aide",
+    "tech_savviness": "medium",
+    "shopping_style": "impulse",
+    "price_sensitivity": "high",
+    "priorities": [
+      "design",
+      "price",
+      "brand"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 41-year-old female home health aide in a suburban area of the US West who lives with a partner. Household income under $35k; medium comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, price and brand. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P034",
+    "label": "49, rural police officer, couple",
+    "age_band": "45-54",
+    "gender": "female",
+    "location_type": "rural",
+    "region": "US-South",
+    "household": "couple",
+    "income_band": "35-75k",
+    "occupation": "police officer",
+    "tech_savviness": "medium",
+    "shopping_style": "convenience_first",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "convenience",
+      "quality",
+      "features"
+    ],
+    "dealbreakers": [
+      "no free returns"
+    ],
+    "bio": "A 49-year-old female police officer in a rural area of the US South who lives with a partner. Household income $35\u201375k; medium comfort with technology. Values convenience and will pay to avoid hassle. Cares most about convenience, quality and features. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P035",
+    "label": "55, suburban civil engineer, retiree",
+    "age_band": "55-64",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-South",
+    "household": "retiree",
+    "income_band": "75-150k",
+    "occupation": "civil engineer",
+    "tech_savviness": "low",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "features",
+      "quality"
+    ],
+    "dealbreakers": [
+      "subscription required",
+      "poor reviews"
+    ],
+    "bio": "A 55-year-old male civil engineer in a suburban area of the US South who is retired and lives with a spouse. Household income $75\u2013150k; low comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, features and quality. Refuses products that require a subscription. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P036",
+    "label": "65, suburban retired, retiree",
+    "age_band": "65+",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "retiree",
+    "income_band": "35-75k",
+    "occupation": "retired",
+    "tech_savviness": "low",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "quality",
+      "features"
+    ],
+    "dealbreakers": [
+      "subscription required"
+    ],
+    "bio": "A 65-year-old female retiree in a suburban area of the US West who is retired and lives with a spouse. Household income $35\u201375k; low comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, quality and features. Refuses products that require a subscription.",
+    "weight": 1.0
+  },
+  {
+    "id": "P037",
+    "label": "18, rural rideshare driver, single",
+    "age_band": "18-24",
+    "gender": "male",
+    "location_type": "rural",
+    "region": "US-West",
+    "household": "single",
+    "income_band": "<35k",
+    "occupation": "rideshare driver",
+    "tech_savviness": "medium",
+    "shopping_style": "eco_conscious",
+    "price_sensitivity": "high",
+    "priorities": [
+      "sustainability",
+      "price",
+      "convenience"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "An 18-year-old male rideshare driver in a rural area of the US West who lives alone. Household income under $35k; medium comfort with technology. Prefers sustainable products and avoids wasteful brands. Cares most about sustainability, price and convenience. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P038",
+    "label": "29, urban VP of operations, family with kids",
+    "age_band": "25-34",
+    "gender": "male",
+    "location_type": "urban",
+    "region": "US-West",
+    "household": "family_with_kids",
+    "income_band": "150k+",
+    "occupation": "VP of operations",
+    "tech_savviness": "high",
+    "shopping_style": "impulse",
+    "price_sensitivity": "low",
+    "priorities": [
+      "design",
+      "quality",
+      "durability"
+    ],
+    "dealbreakers": [
+      "poor reviews"
+    ],
+    "bio": "A 29-year-old male VP of operations in an urban area of the US West who lives with a partner and kids. Household income over $150k; high comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, quality and durability. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P039",
+    "label": "44, suburban graphic designer, single",
+    "age_band": "35-44",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-Northeast",
+    "household": "single",
+    "income_band": "35-75k",
+    "occupation": "graphic designer",
+    "tech_savviness": "high",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "support",
+      "durability"
+    ],
+    "dealbreakers": [],
+    "bio": "A 44-year-old female graphic designer in a suburban area of the US Northeast who lives alone. Household income $35\u201375k; high comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, support and durability.",
+    "weight": 1.0
+  },
+  {
+    "id": "P040",
+    "label": "50, rural pharmacist, couple",
+    "age_band": "45-54",
+    "gender": "female",
+    "location_type": "rural",
+    "region": "US-Midwest",
+    "household": "couple",
+    "income_band": "75-150k",
+    "occupation": "pharmacist",
+    "tech_savviness": "medium",
+    "shopping_style": "researcher",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "features",
+      "design",
+      "sustainability"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 50-year-old female pharmacist in a rural area of the US Midwest who lives with a partner. Household income $75\u2013150k; medium comfort with technology. Researches purchases carefully, reading specs and reviews. Cares most about features, design and sustainability. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P041",
+    "label": "62, rural cashier, family with kids",
+    "age_band": "55-64",
+    "gender": "female",
+    "location_type": "rural",
+    "region": "US-Midwest",
+    "household": "family_with_kids",
+    "income_band": "<35k",
+    "occupation": "cashier",
+    "tech_savviness": "medium",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "high",
+    "priorities": [
+      "brand",
+      "price",
+      "support"
+    ],
+    "dealbreakers": [
+      "poor reviews"
+    ],
+    "bio": "A 62-year-old female cashier in a rural area of the US Midwest who lives with a partner and kids. Household income under $35k; medium comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, price and support. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P042",
+    "label": "66, urban retired, retiree",
+    "age_band": "65+",
+    "gender": "female",
+    "location_type": "urban",
+    "region": "US-South",
+    "household": "retiree",
+    "income_band": "<35k",
+    "occupation": "retired",
+    "tech_savviness": "medium",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "quality",
+      "design"
+    ],
+    "dealbreakers": [
+      "poor reviews"
+    ],
+    "bio": "A 66-year-old female retiree in an urban area of the US South who is retired and lives with a spouse. Household income under $35k; medium comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, quality and design. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P043",
+    "label": "18, suburban retail associate, single",
+    "age_band": "18-24",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-Midwest",
+    "household": "single",
+    "income_band": "<35k",
+    "occupation": "retail associate",
+    "tech_savviness": "high",
+    "shopping_style": "researcher",
+    "price_sensitivity": "high",
+    "priorities": [
+      "features",
+      "price",
+      "sustainability"
+    ],
+    "dealbreakers": [
+      "no free returns"
+    ],
+    "bio": "An 18-year-old female retail associate in a suburban area of the US Midwest who lives alone. Household income under $35k; high comfort with technology. Researches purchases carefully, reading specs and reviews. Cares most about features, price and sustainability. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P044",
+    "label": "28, suburban product director, roommates",
+    "age_band": "25-34",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "roommates",
+    "income_band": "150k+",
+    "occupation": "product director",
+    "tech_savviness": "high",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "support",
+      "quality"
+    ],
+    "dealbreakers": [
+      "slow shipping",
+      "poor reviews"
+    ],
+    "bio": "A 28-year-old female product director in a suburban area of the US West who lives with roommates. Household income over $150k; high comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, support and quality. Won't wait on slow shipping. Skips anything with weak reviews.",
+    "weight": 1.0
+  },
+  {
+    "id": "P045",
+    "label": "40, rural office manager, family with kids",
+    "age_band": "35-44",
+    "gender": "female",
+    "location_type": "rural",
+    "region": "US-South",
+    "household": "family_with_kids",
+    "income_band": "35-75k",
+    "occupation": "office manager",
+    "tech_savviness": "high",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "design",
+      "durability"
+    ],
+    "dealbreakers": [],
+    "bio": "A 40-year-old female office manager in a rural area of the US South who lives with a partner and kids. Household income $35\u201375k; high comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, design and durability.",
+    "weight": 1.0
+  },
+  {
+    "id": "P046",
+    "label": "54, urban line cook, family with kids",
+    "age_band": "45-54",
+    "gender": "female",
+    "location_type": "urban",
+    "region": "US-South",
+    "household": "family_with_kids",
+    "income_band": "<35k",
+    "occupation": "line cook",
+    "tech_savviness": "medium",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "support",
+      "brand"
+    ],
+    "dealbreakers": [
+      "slow shipping",
+      "no free returns"
+    ],
+    "bio": "A 54-year-old female line cook in an urban area of the US South who lives with a partner and kids. Household income under $35k; medium comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, support and brand. Won't wait on slow shipping. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P047",
+    "label": "59, urban physical therapist, couple",
+    "age_band": "55-64",
+    "gender": "nonbinary",
+    "location_type": "urban",
+    "region": "US-Midwest",
+    "household": "couple",
+    "income_band": "75-150k",
+    "occupation": "physical therapist",
+    "tech_savviness": "low",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "features",
+      "sustainability"
+    ],
+    "dealbreakers": [],
+    "bio": "A 59-year-old nonbinary physical therapist in an urban area of the US Midwest who lives with a partner. Household income $75\u2013150k; low comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, features and sustainability.",
+    "weight": 1.0
+  },
+  {
+    "id": "P048",
+    "label": "73, suburban retired, single",
+    "age_band": "65+",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-Northeast",
+    "household": "single",
+    "income_band": "35-75k",
+    "occupation": "retired",
+    "tech_savviness": "medium",
+    "shopping_style": "researcher",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "features",
+      "support",
+      "price"
+    ],
+    "dealbreakers": [],
+    "bio": "A 73-year-old female retiree in a suburban area of the US Northeast who lives alone. Household income $35\u201375k; medium comfort with technology. Researches purchases carefully, reading specs and reviews. Cares most about features, support and price.",
+    "weight": 1.0
+  },
+  {
+    "id": "P049",
+    "label": "21, urban college student, single",
+    "age_band": "18-24",
+    "gender": "female",
+    "location_type": "urban",
+    "region": "US-West",
+    "household": "single",
+    "income_band": "<35k",
+    "occupation": "college student",
+    "tech_savviness": "medium",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "durability",
+      "quality"
+    ],
+    "dealbreakers": [
+      "no free returns"
+    ],
+    "bio": "A 21-year-old female college student in an urban area of the US West who lives alone. Household income under $35k; medium comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, durability and quality. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P050",
+    "label": "31, urban marketing manager, roommates",
+    "age_band": "25-34",
+    "gender": "female",
+    "location_type": "urban",
+    "region": "US-West",
+    "household": "roommates",
+    "income_band": "75-150k",
+    "occupation": "marketing manager",
+    "tech_savviness": "high",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "convenience",
+      "brand"
+    ],
+    "dealbreakers": [],
+    "bio": "A 31-year-old female marketing manager in an urban area of the US West who lives with roommates. Household income $75\u2013150k; high comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, convenience and brand.",
+    "weight": 1.0
+  },
+  {
+    "id": "P051",
+    "label": "39, suburban dental hygienist, couple",
+    "age_band": "35-44",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-Northeast",
+    "household": "couple",
+    "income_band": "35-75k",
+    "occupation": "dental hygienist",
+    "tech_savviness": "high",
+    "shopping_style": "eco_conscious",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "sustainability",
+      "convenience",
+      "design"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 39-year-old female dental hygienist in a suburban area of the US Northeast who lives with a partner. Household income $35\u201375k; high comfort with technology. Prefers sustainable products and avoids wasteful brands. Cares most about sustainability, convenience and design. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P052",
+    "label": "53, suburban small-business owner, roommates",
+    "age_band": "45-54",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-South",
+    "household": "roommates",
+    "income_band": "150k+",
+    "occupation": "small-business owner",
+    "tech_savviness": "low",
+    "shopping_style": "impulse",
+    "price_sensitivity": "low",
+    "priorities": [
+      "design",
+      "sustainability",
+      "price"
+    ],
+    "dealbreakers": [],
+    "bio": "A 53-year-old male small-business owner in a suburban area of the US South who lives with roommates. Household income over $150k; low comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, sustainability and price.",
+    "weight": 1.0
+  },
+  {
+    "id": "P053",
+    "label": "55, suburban teacher, retiree",
+    "age_band": "55-64",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-Midwest",
+    "household": "retiree",
+    "income_band": "35-75k",
+    "occupation": "teacher",
+    "tech_savviness": "medium",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "features",
+      "brand"
+    ],
+    "dealbreakers": [
+      "no warranty",
+      "no free returns"
+    ],
+    "bio": "A 55-year-old female teacher in a suburban area of the US Midwest who is retired and lives with a spouse. Household income $35\u201375k; medium comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, features and brand. Won't buy anything without a warranty. Won't buy without free returns.",
+    "weight": 1.0
+  },
+  {
+    "id": "P054",
+    "label": "68, suburban warehouse worker, retiree",
+    "age_band": "65+",
+    "gender": "female",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "retiree",
+    "income_band": "<35k",
+    "occupation": "warehouse worker",
+    "tech_savviness": "low",
+    "shopping_style": "eco_conscious",
+    "price_sensitivity": "high",
+    "priorities": [
+      "sustainability",
+      "price",
+      "quality"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 68-year-old female warehouse worker in a suburban area of the US West who is retired and lives with a spouse. Household income under $35k; low comfort with technology. Prefers sustainable products and avoids wasteful brands. Cares most about sustainability, price and quality. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P055",
+    "label": "19, rural warehouse worker, roommates",
+    "age_band": "18-24",
+    "gender": "male",
+    "location_type": "rural",
+    "region": "US-South",
+    "household": "roommates",
+    "income_band": "<35k",
+    "occupation": "warehouse worker",
+    "tech_savviness": "high",
+    "shopping_style": "bargain_hunter",
+    "price_sensitivity": "high",
+    "priorities": [
+      "price",
+      "design",
+      "sustainability"
+    ],
+    "dealbreakers": [],
+    "bio": "A 19-year-old male warehouse worker in a rural area of the US South who lives with roommates. Household income under $35k; high comfort with technology. Hunts for deals and compares prices before buying anything. Cares most about price, design and sustainability.",
+    "weight": 1.0
+  },
+  {
+    "id": "P056",
+    "label": "26, suburban dentist, roommates",
+    "age_band": "25-34",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-West",
+    "household": "roommates",
+    "income_band": "150k+",
+    "occupation": "dentist",
+    "tech_savviness": "medium",
+    "shopping_style": "convenience_first",
+    "price_sensitivity": "low",
+    "priorities": [
+      "convenience",
+      "features",
+      "brand"
+    ],
+    "dealbreakers": [],
+    "bio": "A 26-year-old male dentist in a suburban area of the US West who lives with roommates. Household income over $150k; medium comfort with technology. Values convenience and will pay to avoid hassle. Cares most about convenience, features and brand.",
+    "weight": 1.0
+  },
+  {
+    "id": "P057",
+    "label": "41, suburban accountant, family with kids",
+    "age_band": "35-44",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-South",
+    "household": "family_with_kids",
+    "income_band": "75-150k",
+    "occupation": "accountant",
+    "tech_savviness": "medium",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "price",
+      "convenience"
+    ],
+    "dealbreakers": [],
+    "bio": "A 41-year-old male accountant in a suburban area of the US South who lives with a partner and kids. Household income $75\u2013150k; medium comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, price and convenience.",
+    "weight": 1.0
+  },
+  {
+    "id": "P058",
+    "label": "45, urban graphic designer, roommates",
+    "age_band": "45-54",
+    "gender": "female",
+    "location_type": "urban",
+    "region": "US-South",
+    "household": "roommates",
+    "income_band": "35-75k",
+    "occupation": "graphic designer",
+    "tech_savviness": "medium",
+    "shopping_style": "brand_loyal",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "brand",
+      "durability",
+      "price"
+    ],
+    "dealbreakers": [],
+    "bio": "A 45-year-old female graphic designer in an urban area of the US South who lives with roommates. Household income $35\u201375k; medium comfort with technology. Sticks with brands they trust and pays for reliability. Cares most about brand, durability and price.",
+    "weight": 1.0
+  },
+  {
+    "id": "P059",
+    "label": "62, suburban electrician, couple",
+    "age_band": "55-64",
+    "gender": "male",
+    "location_type": "suburban",
+    "region": "US-South",
+    "household": "couple",
+    "income_band": "35-75k",
+    "occupation": "electrician",
+    "tech_savviness": "medium",
+    "shopping_style": "eco_conscious",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "sustainability",
+      "durability",
+      "convenience"
+    ],
+    "dealbreakers": [
+      "no warranty"
+    ],
+    "bio": "A 62-year-old male electrician in a suburban area of the US South who lives with a partner. Household income $35\u201375k; medium comfort with technology. Prefers sustainable products and avoids wasteful brands. Cares most about sustainability, durability and convenience. Won't buy anything without a warranty.",
+    "weight": 1.0
+  },
+  {
+    "id": "P060",
+    "label": "70, rural retired, retiree",
+    "age_band": "65+",
+    "gender": "male",
+    "location_type": "rural",
+    "region": "US-South",
+    "household": "retiree",
+    "income_band": "35-75k",
+    "occupation": "retired",
+    "tech_savviness": "medium",
+    "shopping_style": "impulse",
+    "price_sensitivity": "medium",
+    "priorities": [
+      "design",
+      "brand",
+      "convenience"
+    ],
+    "dealbreakers": [],
+    "bio": "A 70-year-old male retiree in a rural area of the US South who is retired and lives with a spouse. Household income $35\u201375k; medium comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, brand and convenience.",
+    "weight": 1.0
+  }
+]
