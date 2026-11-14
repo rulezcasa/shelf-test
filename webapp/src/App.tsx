@@ -1,14 +1,26 @@
-import { useState } from 'react'
-import UploadTab from './UploadTab'
-import ResultsTab from './ResultsTab'
+import { useEffect, useState } from 'react'
+import ProductsPage from './ProductsPage'
+import TestsPage from './TestsPage'
 
-type Tab = 'setup' | 'results'
+// Hash routes: #/products, #/products/<pid>, #/tests, #/tests/<pid>, #/tests/<pid>/<runId>
+function useHash() {
+  const [hash, setHash] = useState(window.location.hash)
+  useEffect(() => {
+    const onChange = () => setHash(window.location.hash)
+    window.addEventListener('hashchange', onChange)
+    return () => window.removeEventListener('hashchange', onChange)
+  }, [])
+  return hash
+}
 
-export type RunInfo = { finishedAt: Date; decisions: number; wallTime: string; medianLatency: string }
+const go = (hash: string) => {
+  window.location.hash = hash
+  window.scrollTo(0, 0)
+}
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>('setup')
-  const [run, setRun] = useState<RunInfo | null>(null)
+  const [section = 'products', a = null, b = null] = useHash().replace(/^#\/?/, '').split('/').filter(Boolean)
+  const tab = section === 'tests' ? 'tests' : 'products'
 
   return (
     <div className="app">
@@ -16,28 +28,18 @@ export default function App() {
         <div className="topbar-inner">
           <div className="logo">ShelfTest</div>
           <nav className="tabs">
-            <button className={tab === 'setup' ? 'active' : ''} onClick={() => setTab('setup')}>
-              New test
+            <button className={tab === 'products' ? 'active' : ''} onClick={() => go('#/products')}>
+              Products
             </button>
-            <button className={tab === 'results' ? 'active' : ''} onClick={() => setTab('results')}>
-              Results
-              {run && <span className="tab-dot" />}
+            <button className={tab === 'tests' ? 'active' : ''} onClick={() => go('#/tests')}>
+              Tests
             </button>
           </nav>
         </div>
       </header>
 
       <main className="page">
-        {tab === 'setup' ? (
-          <UploadTab
-            onRunComplete={(info) => {
-              setRun(info)
-              setTab('results')
-            }}
-          />
-        ) : (
-          <ResultsTab run={run} onNewTest={() => setTab('setup')} />
-        )}
+        {tab === 'products' ? <ProductsPage pid={a} go={go} /> : <TestsPage pid={a} runId={b} go={go} />}
       </main>
     </div>
   )

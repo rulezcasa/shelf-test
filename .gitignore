@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 app/data/cache/
 app/data/runs/
+
+# webapp
+node_modules/
+webapp/dist/
+app/data/products/

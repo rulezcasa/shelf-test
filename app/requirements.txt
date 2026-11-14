@@ -6,3 +6,6 @@ numpy
 streamlit
 altair
 reportlab
+fastapi
+uvicorn[standard]
+python-multipart
