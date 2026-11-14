@@ -11,20 +11,20 @@ Built for the **Nace AI Drexathon** (Nov 14, 2026) on **Drex** · **NDI** · **K
 
 ---
 
-## ✨ Highlights
+## Highlights
 
-| | Highlight | Proof from our live runs |
-|---|---|---|
-| 🌍 | **Predictions grounded in the live market.** Keenable searches the web for competitors, current prices, complaints and standard features before any shopper decides. | The **winner flipped**: alone, the $149 variant won by **+19.6 pts**. With live market context, the $249 variant won by **+5.4 pts**. Competitors sell at $399–$749, and the cheap one lacked a feature most rivals have. |
-| 🎛️ | **Scenario lab with shoppers you can watch.** Sliders for competitor price cuts, free shipping, bad competitor reviews, new pain points, your own price and features. Persona dots animate between variants. | Raising variant A's price by 40% **flipped the recommendation** to B: **11 shoppers switched** and "price" went from **12% → 47%** of A's skip reasons. |
-| ⚡ | **A decision model, not a chatbot.** Drex answers exactly the two questions that matter, *will they buy?* and *what stops them?*, for every shopper × variant. | **35× faster** than Llama 3.3 70B (141 ms vs 4.9 s per decision), **6× more consistent** on repeat calls, and a **more decisive lift** (+19.6 vs +12.3 pts), with the same winner. |
-| 🎙️ | **Real customer voices in the panel.** Upload an interview recording, and NDI turns it into a shopper persona built only from what the customer said. No guessing of gender, income or anything unsaid. | Interview personas join every test alongside 60 generated shoppers. |
-| 🔎 | **Every claim is traceable.** Product fields carry the PDF page they came from. Market facts link to the web page Keenable found them on. | 37 sources from ~9 Keenable requests per product, shown beside each assumption. |
-| 📊 | **Statistics, not vibes.** Paired design (every shopper sees every variant), bootstrap 95% CIs, P(better), segment breakdowns and skip-reason mix. | 120 decisions (60 shoppers × 2 variants) in **~5 s**. Results stream in live. |
+ Highlight | Proof from our live runs |
+---|---|
+ **Predictions grounded in the live market.** Keenable searches the web for competitors, current prices, complaints and standard features before any shopper decides. | The **winner flipped**: alone, the $149 variant won by **+19.6 pts**. With live market context, the $249 variant won by **+5.4 pts**. Competitors sell at $399–$749, and the cheap one lacked a feature most rivals have. |
+ **Scenario lab with shoppers you can watch.** Sliders for competitor price cuts, free shipping, bad competitor reviews, new pain points, your own price and features. Persona dots animate between variants. | Raising variant A's price by 40% **flipped the recommendation** to B: **11 shoppers switched** and "price" went from **12% → 47%** of A's skip reasons. |
+ **A decision model, not a chatbot.** Drex answers exactly the two questions that matter, *will they buy?* and *what stops them?*, for every shopper × variant. | **35× faster** than Llama 3.3 70B (141 ms vs 4.9 s per decision), **6× more consistent** on repeat calls, and a **more decisive lift** (+19.6 vs +12.3 pts), with the same winner. |
+ **Real customer voices in the panel.** Upload an interview recording, and NDI turns it into a shopper persona built only from what the customer said. No guessing of gender, income or anything unsaid. | Interview personas join every test alongside 60 generated shoppers. |
+ **Every claim is traceable.** Product fields carry the PDF page they came from. Market facts link to the web page Keenable found them on. | 37 sources from ~9 Keenable requests per product, shown beside each assumption. |
+ **Statistics, not vibes.** Paired design (every shopper sees every variant), bootstrap 95% CIs, P(better), segment breakdowns and skip-reason mix. | 120 decisions (60 shoppers × 2 variants) in **~5 s**. Results stream in live. |
 
 ---
 
-## 💡 Why this matters
+##  Why this matters
 
 **The problem.** Picking which page, price or bundle to ship is a guess that real A/B tests settle
 slowly and expensively:
@@ -49,7 +49,7 @@ slowly and expensively:
 
 ---
 
-## 🧠 Why a decision model (Drex) and not just an LLM?
+##  Why a decision model (Drex) and not just an LLM?
 
 Purchase decisions need a **calibrated, repeatable judgment** for thousands of shopper ×
 variant pairs, not a paragraph of text. That's what a decision model is for:
@@ -78,7 +78,7 @@ variant pairs, not a paragraph of text. That's what a decision model is for:
 
 ---
 
-## 🧩 How the tools fit together
+##  How the tools fit together
 
 | Tool | Role in ShelfTest |
 |---|---|
