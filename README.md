@@ -2,7 +2,7 @@
 
 **Predict which product variant will win before it gets real traffic.**
 
-ShelfTest is a synthetic A/B testing tool. You upload two or more versions of a product page,
+ShelfTest is a A/B testing tool. You upload two or more versions of a product page,
 spec sheet or pricing sheet. A panel of synthetic shoppers "reads" each one and decides whether
 to buy, grounded in what the live market looks like today. You get predicted purchase
 propensity per variant, the lift over control with confidence intervals, which shopper
@@ -11,12 +11,7 @@ segments each variant wins or loses, and why shoppers skip. A scenario lab then 
 
 Built for the Nace AI Drexathon (Nov 14, 2026).
 
-> Results are **simulated purchase intent** from synthetic personas. They show direction, not
-> real conversion rates, and are meant to decide which variants deserve real traffic, not to
-> replace real customers.
-
 ---
-
 ## Why
 
 - **Real A/B tests are slow and expensive.** They need weeks of traffic, and every losing
