@@ -94,57 +94,6 @@ market changes before you commit traffic.
   4.9 s median per decision), more consistent on repeated calls, and found a larger, more
   decisive lift (+19.6 vs +12.3 pts).
 
----
-
-## Architecture
-
-```
-shelf-test/
-├── .env                      # keys + settings (git-ignored), loaded by app/src/config.py
-├── BUILD.md                  # build spec + change log
-├── app/                      # Python backend (FastAPI)
-│   ├── requirements.txt
-│   ├── src/
-│   │   ├── main.py           # HTTP API for the webapp (/api/...)
-│   │   ├── config.py         # env + settings
-│   │   ├── models.py         # Persona, Variant, Attribute, Product, Decision
-│   │   ├── ndi/              # Nace Document Intelligence
-│   │   │   ├── ndi_client.py       # upload / parse / extract / job polling
-│   │   │   ├── extract_variants.py # variant PDF -> Variant (attributes + citations)
-│   │   │   └── extract_persona.py  # interview audio -> transcript -> Persona
-│   │   ├── model/            # decision models + analysis
-│   │   │   ├── drex_client.py      # Drex prompts, state, questions, parsing
-│   │   │   ├── panel.py            # persona × variant runs, concurrent
-│   │   │   ├── analysis.py         # propensity, bootstrap CI, lift, segments, skip reasons
-│   │   │   └── llm_client.py       # DeepInfra LLM (benchmark baseline + market synthesis)
-│   │   ├── market/           # live market intelligence
-│   │   │   ├── keenable_client.py  # Keenable search + fetch, disk cache
-│   │   │   ├── intel.py            # plan queries -> search -> read -> synthesize MarketIntel
-│   │   │   ├── jobs.py             # background research job per product
-│   │   │   └── scenario.py         # what-if scenarios, cached Drex re-runs, explanations
-│   │   └── api/              # file-backed storage + service logic
-│   │       ├── store.py            # products, variant files, runs, market.json
-│   │       ├── runs.py             # create / load / analyze test runs
-│   │       ├── personas.py         # persona panel + interview personas
-│   │       └── benchmarks.py       # Drex vs LLM benchmark runs
-│   ├── scripts/              # gen_personas, make_sample_variants, run_panel, benchmark
-│   └── data/
-│       ├── personas.json     # the persona panel every test runs
-│       ├── variants/         # sample variant PDFs
-│       ├── benchmarks/       # saved benchmark results
-│       ├── products/         # per-product data (git-ignored)
-│       └── cache/            # Keenable + scenario Drex caches (git-ignored)
-└── webapp/                   # React + TypeScript + Vite frontend
-    └── src/
-        ├── App.tsx                 # hash routes + top nav
-        ├── api.ts                  # typed API client
-        ├── ProductsPage.tsx        # products, variant upload/edit, run panel
-        ├── MarketPanel.tsx         # Keenable market intelligence
-        ├── TestsPage.tsx, TestResults.tsx, LiveRun.tsx, RunGraph.tsx
-        ├── PersonasPage.tsx        # persona panel + interview upload
-        ├── ScenarioPage.tsx        # animated scenario lab
-        └── BenchmarkPage.tsx       # Drex vs LLM
-```
 
 ### External services
 
@@ -218,13 +167,6 @@ needed for market research and the benchmark.
    `sample_B.pdf` (or `kestrel_glide_A/B.pdf`) → Run panel → open the test. Then open
    **Scenarios** and pick the product.
 
-### Scripts
-
-```bash
-python app/scripts/gen_personas.py           # regenerate the synthetic persona panel
-python app/scripts/make_sample_variants.py   # regenerate the sample variant PDFs
-python app/scripts/run_panel.py [product_id] # run a panel from the CLI and print the summary
-python app/scripts/benchmark.py -n 20        # Drex vs LLM benchmark (writes data/benchmarks/)
 ```
 
 --nds on what the web sources say. The LLM's price positions and
