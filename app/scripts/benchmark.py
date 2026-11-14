@@ -87,7 +87,7 @@ def metrics(df: pd.DataFrame, run_stats: dict, personas) -> dict:
     res = {}
     main = df[df["repeat"] == 0]
     for m, g in main.groupby("model"):
-        dec = [Decision(**{k: r[k] for k in Decision.model_fields}) for r in g.to_dict("records")]
+        dec = [Decision(**{k: (None if pd.isna(r[k]) else r[k]) if not isinstance(r[k], (dict, list)) else r[k] for k in Decision.model_fields}) for r in g.to_dict("records")]
         frame = decision_frame(dec, personas)
         lat = g.latency_ms.dropna()
         st = run_stats[m]
@@ -117,7 +117,7 @@ def metrics(df: pd.DataFrame, run_stats: dict, personas) -> dict:
         common = pref["drex"].index.intersection(pref["llm"].index)
         res["agreement"] = {
             "p_buy_pearson": float(w.drex.corr(w.llm)),
-            "p_buy_spearman": float(w.drex.corr(w.llm, method="spearman")),
+            "p_buy_spearman": float(w.drex.rank().corr(w.llm.rank())),
             "mean_abs_diff": float((w.drex - w.llm).abs().mean()),
             "outcome_agreement": float((o.drex == o.llm).mean()),
             "preferred_variant_agreement": float((pref["drex"][common] == pref["llm"][common]).mean()),
