@@ -1,0 +1,116 @@
+{
+ "drex": {
+  "summary": [
+   {
+    "variant_id": "A",
+    "propensity": 0.3927928934152544,
+    "ci_low": 0.31363954864212285,
+    "ci_high": 0.4810413858091928,
+    "buy_share": 0.3333333333333333,
+    "consider_share": 0.15,
+    "reject_share": 0.5166666666666667,
+    "mean_confidence": 0.8206252414384938,
+    "low_confidence_count": 8,
+    "preference_share": 0.26666666666666666
+   },
+   {
+    "variant_id": "B",
+    "propensity": 0.5891815377185797,
+    "ci_low": 0.5394541526441944,
+    "ci_high": 0.6408164357943386,
+    "buy_share": 0.55,
+    "consider_share": 0.31666666666666665,
+    "reject_share": 0.13333333333333333,
+    "mean_confidence": 0.6840197806135543,
+    "low_confidence_count": 15,
+    "preference_share": 0.7333333333333333
+   }
+  ],
+  "lift": [
+   {
+    "variant_id": "B",
+    "control": "A",
+    "abs_lift": 0.19638864430332528,
+    "rel_lift": 0.49998013608587955,
+    "ci_low": 0.13148039569010436,
+    "ci_high": 0.2598474117880899,
+    "prob_better": 1.0
+   }
+  ],
+  "latency_median_ms": 140.65,
+  "latency_p95_ms": 224.2,
+  "wall_s": 4.851979334009229,
+  "throughput_per_s": 24.732174590868063,
+  "calls": 140,
+  "failed": 0,
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "cost_usd": null,
+  "repeat_std": 0.0008843176627352343,
+  "skip_reasons": {
+   "price": 0.582089552238806,
+   "quality_trust": 0.3880597014925373,
+   "missing_feature": 0.014925373134328358,
+   "shipping_returns": 0.014925373134328358
+  }
+ },
+ "llm": {
+  "summary": [
+   {
+    "variant_id": "A",
+    "propensity": 0.5316666666666666,
+    "ci_low": 0.45581249999999995,
+    "ci_high": 0.6108541666666667,
+    "buy_share": 0.65,
+    "consider_share": 0.05,
+    "reject_share": 0.3,
+    "mean_confidence": 0.7850000000000001,
+    "low_confidence_count": 0,
+    "preference_share": 0.5666666666666667
+   },
+   {
+    "variant_id": "B",
+    "propensity": 0.655,
+    "ci_low": 0.6083333333333332,
+    "ci_high": 0.7033750000000001,
+    "buy_share": 0.8666666666666667,
+    "consider_share": 0.0,
+    "reject_share": 0.13333333333333333,
+    "mean_confidence": 0.7350000000000001,
+    "low_confidence_count": 0,
+    "preference_share": 0.43333333333333335
+   }
+  ],
+  "lift": [
+   {
+    "variant_id": "B",
+    "control": "A",
+    "abs_lift": 0.12333333333333331,
+    "rel_lift": 0.231974921630094,
+    "ci_low": 0.07833333333333332,
+    "ci_high": 0.17249999999999996,
+    "prob_better": 1.0
+   }
+  ],
+  "latency_median_ms": 4937.114645501424,
+  "latency_p95_ms": 25197.592456242273,
+  "wall_s": 149.76581370799977,
+  "throughput_per_s": 0.8012509465876202,
+  "calls": 140,
+  "failed": 0,
+  "tokens_in": 88374,
+  "tokens_out": 11200,
+  "cost_usd": 0.02480602,
+  "repeat_std": 0.005773502691896262,
+  "skip_reasons": {
+   "price": 1.0
+  }
+ },
+ "agreement": {
+  "p_buy_pearson": 0.7834974251205009,
+  "p_buy_spearman": 0.8217972086243819,
+  "mean_abs_diff": 0.15952070740615246,
+  "outcome_agreement": 0.6083333333333333,
+  "preferred_variant_agreement": 0.7
+ }
+}
