@@ -13,6 +13,7 @@ def _bool(name: str, default: str = "false") -> bool:
 
 DATA_DIR = ROOT / "data"
 PERSONAS_PATH = DATA_DIR / "personas.json"
+PERSONA_FILES_DIR = DATA_DIR / "personas"   # interview audio + transcripts, one folder per persona
 CACHE_DIR = DATA_DIR / "cache"
 RUNS_DIR = DATA_DIR / "runs"
 

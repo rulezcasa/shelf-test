@@ -8,6 +8,7 @@ import httpx
 
 from .. import config
 from ..models import Decision, Persona, Variant
+from ..ndi.ndi_client import describe_error
 
 # ---- Prompts (tune here) ----------------------------------------------------
 
@@ -92,7 +93,7 @@ async def evaluate(http: httpx.AsyncClient, persona: Persona, variant: Variant,
     r = await http.post("/v1/systemone", json=payload)
     latency = (time.perf_counter() - t0) * 1000
     if r.status_code != 200:
-        raise DrexError(f"Drex {r.status_code}: {r.text}")
+        raise DrexError(describe_error("Drex", r))
     return parse_decision(r.json(), persona.id, variant.variant_id, latency)
 
 

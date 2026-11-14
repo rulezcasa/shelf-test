@@ -8,3 +8,4 @@ app/data/runs/
 node_modules/
 webapp/dist/
 app/data/products/
+app/data/personas/

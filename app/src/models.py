@@ -2,26 +2,32 @@ from pydantic import BaseModel
 
 
 class Persona(BaseModel):
+    """A synthetic shopper. Generated personas fill every field; interview personas leave
+    anything the interviewee didn't say empty (None / []) rather than guessing."""
     id: str
-    label: str
-    age_band: str
-    gender: str
-    location_type: str
-    region: str
-    household: str
-    income_band: str
-    occupation: str
-    tech_savviness: str
-    shopping_style: str
-    price_sensitivity: str
-    priorities: list[str]
-    dealbreakers: list[str]
-    bio: str
+    label: str                       # short display line, e.g. "42, suburban nurse, family with kids"
+    name: str | None = None          # interviewee's first name, if they gave one
+    age_band: str | None = None
+    gender: str | None = None
+    location_type: str | None = None
+    region: str | None = None
+    household: str | None = None
+    income_band: str | None = None
+    occupation: str | None = None
+    tech_savviness: str | None = None
+    shopping_style: str | None = None
+    price_sensitivity: str | None = None
+    priorities: list[str] = []
+    dealbreakers: list[str] = []
+    bio: str | None = None
     weight: float = 1.0
+    source: str = "generated"        # "generated" | "interview"
+    source_file: str | None = None   # original audio file name for interview personas
 
     def decision_view(self) -> dict:
-        """What Drex sees: everything except our ids/labels and the aggregation weight."""
-        return self.model_dump(exclude={"id", "label", "weight"})
+        """What Drex sees: the persona's attributes, minus our ids/labels/bookkeeping and empty fields."""
+        d = self.model_dump(exclude={"id", "label", "name", "weight", "source", "source_file"})
+        return {k: v for k, v in d.items() if v not in (None, "", [])}
 
 
 class Attribute(BaseModel):

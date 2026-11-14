@@ -45,7 +45,6 @@ function TestIndex({ onlyPid, go }: { onlyPid: string | null; go: (hash: string)
       <div className="page-head">
         <div>
           <h1>{onlyPid && groups?.[0] ? `Tests · ${groups[0].product.name}` : 'Tests'}</h1>
-          <p className="sub">Each test runs every persona against every variant of a product through Drex.</p>
         </div>
       </div>
 
@@ -55,7 +54,6 @@ function TestIndex({ onlyPid, go }: { onlyPid: string | null; go: (hash: string)
         <div className="empty-state">
           <div className="empty-icon">▤</div>
           <h2>No tests yet</h2>
-          <p className="muted">Open a product with at least two variants and run the persona panel.</p>
           <button className="btn btn-primary" onClick={() => go(onlyPid ? `#/products/${onlyPid}` : '#/products')}>
             {onlyPid ? 'Open product' : 'Go to products'}
           </button>
@@ -132,7 +130,7 @@ function TestDetail({ pid, runId, go }: { pid: string; runId: string; go: (hash:
       title={no != null ? `Test ${no}` : 'Test'}
       date={fmtDate(run)}
       onBack={() => go('#/tests')}
-      onNewRun={(r) => go(`#/tests/${pid}/${r.id}`)}
+      onNewRun={(runId) => go(`#/tests/${pid}/${runId}`)}
     />
   )
 }

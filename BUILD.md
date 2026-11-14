@@ -82,6 +82,9 @@ shelf-test/
     src/ProductsPage.tsx       # product list -> product: upload variants, edit extracted fields, run a test
     src/TestsPage.tsx          # tests grouped by product -> one test's results
     src/TestResults.tsx        # one test: overview, segments, personas, export, run again
+    src/RunGraph.tsx           # live run animation: persona ring -> variant nodes, edge per streamed decision
+    src/PersonasPage.tsx       # #/personas: persona cards; add from interview audio; review dialog (audio, waveform, transcript, editable fields)
+    src/LiveRun.tsx            # useLiveRun(product): streams a run + full-screen RunGraph overlay (product page "Run test", test page "Run again")
 ```
 
 Run everything from the `shelf-test` conda env (Python 3.12), e.g. `python app/scripts/gen_personas.py`.
@@ -369,12 +372,16 @@ Goal: show with numbers why a decision model fits this job better than prompting
 | PUT | `/api/products/{pid}/variants/{vid}` | save edits `{product_name, attributes}` (names non-empty + unique) |
 | DELETE | `/api/products/{pid}/variants/{vid}` | remove variant + its file |
 | GET | `/api/products/{pid}/variants/{vid}/file` | original PDF, inline |
+| POST | `/api/personas/interview` | multipart audio (mp3/wav/m4a/…): NDI Parse → transcript, transcript markdown uploaded as a doc → NDI Extract (Persona schema) → new persona appended to `personas.json` (`source: "interview"`, unmentioned fields empty). ~15 s+. |
+| PUT / DELETE | `/api/personas/{id}` | edit fields / delete (interview personas only) |
+| GET | `/api/personas/{id}/audio` · `/transcript` | original recording · NDI transcript (speakers, timed segments, waveform peaks, markdown) |
 | POST | `/api/products/{pid}/runs?n=` | run personas (all, or first n) × variants through Drex, save to `products/<id>/runs/<ts>.json` (with a snapshot of the variants), return the run. Needs ≥ 2 variants; Drex config error → 502. |
 | GET | `/api/personas` | the persona panel (`data/personas.json`) |
+| POST | `/api/products/{pid}/runs/stream?n=` | same as POST `/runs` but streams NDJSON: `start` (persona + variant ids), one `decision` per Drex answer (persona, variant, p_buy, outcome, skip_reason), then `done` (run id) or `error`. Drives the live run graph (`webapp/src/RunGraph.tsx`). |
 | GET | `/api/products/{pid}/runs` | list runs, newest first (`id`, `created_at`, `stats`) |
 | GET | `/api/products/{pid}/runs/latest` · `/runs/{run_id}` | full run: `stats`, `variants`, `personas`, `decisions`, `analysis` (`summary`, `lift`, `segments`, `skip_reasons`, `personas` table), computed on read |
 
-UI navigation: **Products** (`#/products`, `#/products/<id>`) and **Tests** (`#/tests`, `#/tests/<id>`, `#/tests/<id>/<run>`). A test = one saved panel run; running from a product opens its results.
+UI navigation: **Products** (`#/products`, `#/products/<id>`), **Personas** (`#/personas`) and **Tests** (`#/tests`, `#/tests/<id>`, `#/tests/<id>/<run>`). A test = one saved panel run; running from a product opens its results.
 
 Product page flow: create/open product → drop PDFs → one comparison table (row per field, column per variant) edited in place and auto-saved: click a cell to edit (list values one item per line; empty = remove from that variant), click a field name to rename it across variants (also merges mismatched names), × deletes a field everywhere, "+ Add field" adds a row. Column headers link to the original PDF. Citations are stored but not shown. → run panel.
 
@@ -469,6 +476,8 @@ Commit after each milestone. If time is short, M5 can drop the heatmap and the p
   - CLI: `python scripts/run_panel.py [product_id] [-n N]` (default: most recent product). Verified live: 3 personas × 2 variants, 6 decisions in 0.5 s.
 - **Removed** (headphone-only / mock): MarketTwin data pack loader, `baseline.py` heuristic, `MOCK_DREX`, `drex_smoke.py`. The §6.6 Drex-vs-LLM benchmark is still the planned comparison.
 - **Naming:** `Product` = a product under test (webapp/API) holding its `Variant`s; `Decision` = one persona × variant.
+- **Interview personas (NDI audio):** `src/ndi/extract_persona.py` + `src/api/personas.py`. One persona per audio file. NDI Parse handles audio (transcript with speakers, `start_ms`/`end_ms` segments, waveform `peaks`; ~$0.0035 for 48 s), but **Extract rejects audio** (`unsupported_file_type:audio`, also via `parse_result`), so the transcript markdown is uploaded as a `.md` document and extracted with the Persona schema (enums for the categorical fields). Instructions: describe the interviewee only; fill a field only when stated or directly implied (city → region, "husband and two kids" → family_with_kids); never guess (gender only if stated, never from a name; income only if they mention earnings). `Persona` fields are now optional; `decision_view()` drops empty ones so Drex only sees what was said. Stored in `personas.json` (same compact format; generated personas unchanged) + `data/personas/<id>/` (audio + transcript.json, git-ignored). Every test runs generated + interview personas.
+- **NDI job polling path:** console jobs are read at `GET /v1/documents/jobs/{id}` (not `/v1/jobs/{id}`, which 404s); fixed in `ndi_client._wait`.
 
 ## 13. Market intelligence (Keenable) — branch `kleenable`
 

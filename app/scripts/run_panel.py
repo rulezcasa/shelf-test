@@ -15,7 +15,7 @@ from src.model.analysis import analyze  # noqa: E402
 from src.model.panel import load_personas, run_panel  # noqa: E402
 
 
-def progress(done, total):
+def progress(done, total, _decision=None):
     if done % max(1, total // 20) == 0 or done == total:
         print(f"\r  {done}/{total}", end="", flush=True)
 

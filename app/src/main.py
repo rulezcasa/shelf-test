@@ -5,19 +5,20 @@ with NDI right away. Extracted fields can be edited and saved back.
 """
 import json
 import string
+from pathlib import Path
 import threading
 from collections import defaultdict
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
 from .models import Attribute, Persona, Product, Variant
+from .ndi import extract_persona
 from .ndi.extract_variants import extract_variant
 from .ndi.ndi_client import NDIError
 
-from . import config
-from .api import runs, store
+from .api import benchmarks, personas, runs, store
 from .model.drex_client import DrexError
 from .model.panel import load_personas
 
@@ -160,8 +161,107 @@ def variant_file(pid: str, vid: str) -> FileResponse:
 
 @app.get("/api/personas")
 def list_personas() -> list[Persona]:
-    """The persona panel every run uses (data/personas.json)."""
+    """The persona panel every run uses (data/personas.json): generated + interview personas."""
     return load_personas()
+
+
+def _ndjson(events) -> StreamingResponse:
+    return StreamingResponse((json.dumps(e) + "\n" for e in events), media_type="application/x-ndjson")
+
+
+@app.post("/api/personas/analyze/audio")
+def analyze_interview_audio(file: UploadFile = File(...)) -> StreamingResponse:
+    """Interview audio -> NDI transcript -> NDI extract, streamed as NDJSON events
+    (stage / transcript / draft / error). Nothing is saved until POST /api/personas/drafts/{id}."""
+    name = file.filename or "interview"
+    if Path(name).suffix.lower() not in extract_persona.AUDIO_EXTS:
+        raise HTTPException(422, f"unsupported file type; use one of {sorted(extract_persona.AUDIO_EXTS)}")
+    return _ndjson(personas.analyze_audio(name, file.file.read()))
+
+
+class TranscriptIn(BaseModel):
+    text: str
+    title: str | None = None   # optional label for where it came from, e.g. "Interview 3"
+
+
+@app.post("/api/personas/analyze/transcript")
+def analyze_interview_transcript(body: TranscriptIn) -> StreamingResponse:
+    """A pasted interview transcript -> NDI extract, streamed like analyze/audio."""
+    text = body.text.strip()
+    if len(text) < 40:
+        raise HTTPException(422, "transcript is too short")
+    return _ndjson(personas.analyze_text(text, (body.title or "").strip() or None))
+
+
+@app.post("/api/personas/drafts/{draft_id}", status_code=201)
+def save_persona_draft(draft_id: str) -> Persona:
+    """Save an analyzed draft as a new persona in the panel."""
+    try:
+        return personas.save_draft(draft_id)
+    except KeyError:
+        raise HTTPException(404, "draft not found (already saved or discarded)")
+
+
+@app.delete("/api/personas/drafts/{draft_id}", status_code=204)
+def discard_persona_draft(draft_id: str) -> None:
+    personas.discard_draft(draft_id)
+
+
+class PersonaIn(BaseModel):
+    """Editable fields (all optional; send only what changes)."""
+    label: str | None = None
+    name: str | None = None
+    age_band: str | None = None
+    gender: str | None = None
+    location_type: str | None = None
+    region: str | None = None
+    household: str | None = None
+    income_band: str | None = None
+    occupation: str | None = None
+    tech_savviness: str | None = None
+    shopping_style: str | None = None
+    price_sensitivity: str | None = None
+    priorities: list[str] | None = None
+    dealbreakers: list[str] | None = None
+    bio: str | None = None
+
+
+@app.put("/api/personas/{pid}")
+def update_persona(pid: str, body: PersonaIn) -> Persona:
+    changes = body.model_dump(exclude_unset=True)
+    if "label" in changes and not (changes["label"] or "").strip():
+        raise HTTPException(422, "label can't be empty")
+    try:
+        return personas.update(pid, changes)
+    except KeyError:
+        raise HTTPException(404, f"persona {pid} not found")
+
+
+@app.delete("/api/personas/{pid}", status_code=204)
+def delete_persona(pid: str) -> None:
+    try:
+        personas.delete(pid)
+    except KeyError:
+        raise HTTPException(404, f"persona {pid} not found")
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
+
+
+@app.get("/api/personas/{pid}/audio")
+def persona_audio(pid: str) -> FileResponse:
+    try:
+        return FileResponse(personas.audio_path(pid), content_disposition_type="inline")
+    except KeyError:
+        raise HTTPException(404, f"no audio for persona {pid}")
+
+
+@app.get("/api/personas/{pid}/transcript")
+def persona_transcript(pid: str) -> dict:
+    """NDI transcript: {transcript: {speakers, segments[{kind,start_ms,end_ms,speaker,transcript}], duration_ms, peaks}, markdown}."""
+    try:
+        return personas.transcript(pid)
+    except KeyError:
+        raise HTTPException(404, f"no transcript for persona {pid}")
 
 
 # ---- panel runs (Drex) ------------------------------------------------------
@@ -180,6 +280,15 @@ async def create_run(pid: str, n: int | None = None, market: bool = True) -> dic
     if not run["decisions"]:
         raise HTTPException(502, f"every Drex call failed: {run['stats']['failures'][:1]}")
     return run
+
+
+@app.post("/api/products/{pid}/runs/stream")
+async def create_run_stream(pid: str, n: int | None = None, market: bool = True) -> StreamingResponse:
+    """Like POST /runs, but streams NDJSON progress events (one per decision) and ends with the run id."""
+    p = _product(pid)
+    if len(p.variants) < 2:
+        raise HTTPException(422, "need at least 2 variants to run the panel")
+    return StreamingResponse(runs.stream(p, n, use_market=market), media_type="application/x-ndjson")
 
 
 @app.get("/api/products/{pid}/runs")
@@ -206,43 +315,31 @@ def get_run(pid: str, run_id: str) -> dict:
         raise HTTPException(404, f"run {run_id} not found")
 
 
-# ---- benchmarks (Drex vs LLM; written by scripts/benchmark.py) ---------------
-
-def _bench_dirs():
-    root = config.DATA_DIR / "benchmarks"
-    return sorted((d for d in root.glob("*") if (d / "summary.json").exists()), reverse=True) if root.exists() else []
-
+# ---- benchmarks (Drex vs LLM on the same panel) ------------------------------
 
 @app.get("/api/benchmarks")
 def list_benchmarks() -> list[dict]:
-    out = []
-    for d in _bench_dirs():
-        meta = json.loads((d / "decisions.json").read_text())
-        out.append({"id": d.name, "title": meta["title"], "llm_model": meta.get("llm_model"),
-                    "drex_model": meta.get("drex_model"),
-                    "personas": len({r["persona_id"] for r in meta["decisions"]})})
-    return out
+    return benchmarks.list_all()
+
+
+@app.post("/api/benchmarks/stream")
+async def run_benchmark(product: str, n: int | None = None, repeat: int = 2) -> StreamingResponse:
+    """Run Drex and the LLM over the persona panel x this product's variants. Streams NDJSON progress
+    and ends with {"type":"done","id":...}; the result is then at GET /api/benchmarks/{id}."""
+    p = _product(product)
+    if len(p.variants) < 2:
+        raise HTTPException(400, "a benchmark needs a product with at least 2 variants")
+    if n is not None and n < 1:
+        raise HTTPException(400, "n must be at least 1")
+    return StreamingResponse(benchmarks.stream(p.name, p.variants, n, repeat, p.id), media_type="application/x-ndjson")
 
 
 @app.get("/api/benchmarks/{bid}")
 def get_benchmark(bid: str) -> dict:
-    dirs = _bench_dirs()
-    d = dirs[0] if bid == "latest" and dirs else config.DATA_DIR / "benchmarks" / bid
-    if not (d / "summary.json").exists() or d.parent.name != "benchmarks":
+    try:
+        return benchmarks.get(bid)
+    except KeyError:
         raise HTTPException(404, f"benchmark {bid} not found")
-    meta = json.loads((d / "decisions.json").read_text())
-    sens = {p.id: p.price_sensitivity for p in load_personas()}
-    pts: dict[tuple, dict] = {}
-    for r in meta["decisions"]:
-        if r["repeat"] == 0:
-            k = (r["persona_id"], r["variant_id"])
-            pts.setdefault(k, {"persona_id": k[0], "variant_id": k[1], "price_sensitivity": sens.get(k[0])})
-            pts[k][r["model"]] = r["p_buy"]
-            pts[k][f"{r['model']}_outcome"] = r["outcome"]
-            pts[k][f"{r['model']}_latency_ms"] = r["latency_ms"]
-    return {"id": d.name, "title": meta["title"], "llm_model": meta.get("llm_model"),
-            "drex_model": meta.get("drex_model"), "metrics": json.loads((d / "summary.json").read_text()),
-            "points": list(pts.values())}
 
 
 # ---- market intelligence (Keenable live web research) ------------------------
@@ -254,6 +351,14 @@ def get_market(pid: str) -> dict:
     if not m:
         raise HTTPException(404, "no market research yet")
     return m.model_dump()
+
+
+@app.get("/api/products/{pid}/market/status")
+def market_status(pid: str) -> dict:
+    """Background research job started by a test run: {status: idle|running|done|error, step, steps, error}."""
+    from .market import jobs
+    _product(pid)
+    return jobs.status(pid)
 
 
 @app.post("/api/products/{pid}/market", status_code=201)

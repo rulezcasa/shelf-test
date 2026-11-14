@@ -1,0 +1,113 @@
+{
+ "drex": {
+  "summary": [
+   {
+    "variant_id": "A",
+    "propensity": 0.93261081463979,
+    "ci_low": 0.9037109906214439,
+    "ci_high": 0.9575670998990661,
+    "buy_share": 1.0,
+    "consider_share": 0.0,
+    "reject_share": 0.0,
+    "mean_confidence": 0.93261081463979,
+    "low_confidence_count": 0,
+    "preference_share": 1.0
+   },
+   {
+    "variant_id": "B",
+    "propensity": 0.08652676425901926,
+    "ci_low": 0.001389966218154956,
+    "ci_high": 0.2128207126259999,
+    "buy_share": 0.1,
+    "consider_share": 0.0,
+    "reject_share": 0.9,
+    "mean_confidence": 0.9399545222215325,
+    "low_confidence_count": 0,
+    "preference_share": 0.0
+   }
+  ],
+  "lift": [
+   {
+    "variant_id": "B",
+    "control": "A",
+    "abs_lift": -0.8460840503807707,
+    "rel_lift": -0.9072209297804045,
+    "ci_low": -0.9398365169224837,
+    "ci_high": -0.714326866691566,
+    "prob_better": 0.0
+   }
+  ],
+  "latency_median_ms": 226.45,
+  "latency_p95_ms": 283.93000000000006,
+  "wall_s": 1.9985296670347452,
+  "throughput_per_s": 10.007357073500122,
+  "calls": 40,
+  "failed": 0,
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "cost_usd": null,
+  "repeat_std": 0.00031697245515997216,
+  "skip_reasons": {
+   "shipping_returns": 1.0
+  }
+ },
+ "llm": {
+  "summary": [
+   {
+    "variant_id": "A",
+    "propensity": 0.8,
+    "ci_low": 0.7700000000000001,
+    "ci_high": 0.8300000000000001,
+    "buy_share": 1.0,
+    "consider_share": 0.0,
+    "reject_share": 0.0,
+    "mean_confidence": 0.8,
+    "low_confidence_count": 0,
+    "preference_share": 1.0
+   },
+   {
+    "variant_id": "B",
+    "propensity": 0.15,
+    "ci_low": 0.0,
+    "ci_high": 0.36,
+    "buy_share": 0.2,
+    "consider_share": 0.0,
+    "reject_share": 0.8,
+    "mean_confidence": 0.95,
+    "low_confidence_count": 0,
+    "preference_share": 0.0
+   }
+  ],
+  "lift": [
+   {
+    "variant_id": "B",
+    "control": "A",
+    "abs_lift": -0.65,
+    "rel_lift": -0.8125,
+    "ci_low": -0.8200000000000001,
+    "ci_high": -0.42000000000000004,
+    "prob_better": 0.0
+   }
+  ],
+  "latency_median_ms": 4816.313458024524,
+  "latency_p95_ms": 7007.045631343501,
+  "wall_s": 27.926554332952946,
+  "throughput_per_s": 0.7161642557671455,
+  "calls": 40,
+  "failed": 0,
+  "tokens_in": 25410,
+  "tokens_out": 3200,
+  "cost_usd": 0.0071243,
+  "repeat_std": 0.005773502691896262,
+  "skip_reasons": {
+   "shipping_returns": 1.0
+  }
+ },
+ "agreement": {
+  "p_buy_pearson": 0.9337573025920128,
+  "p_buy_spearman": 0.8747454576652179,
+  "mean_abs_diff": 0.09933319665966026,
+  "outcome_agreement": 0.95,
+  "preferred_variant_agreement": 1.0
+ }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { marketApi, type MarketIntel, type Product } from './api'
+import { marketApi, type MarketIntel, type MarketJob, type Product } from './api'
 import { Panel, VariantTag, label } from './ui'
 
 const money = (x: number | null | undefined, c = 'USD') =>
@@ -7,57 +7,65 @@ const money = (x: number | null | undefined, c = 'USD') =>
 
 const POS_CLASS: Record<string, string> = { 'below market': 'pos', 'above market': 'neg' }
 
-/** Live market research for a product (Keenable web search + page retrieval, LLM synthesis). */
+const STEP_LABEL: Record<string, string> = {
+  plan: 'Planning searches',
+  search: 'Searching the web',
+  read: 'Reading reviews',
+  analyze: 'Analyzing competitors',
+}
+
+/** Live market research for a product (Keenable web search + page retrieval, LLM synthesis).
+ *  Research starts automatically with each test run; while it runs this shows its progress. */
 export default function MarketPanel({ product }: { product: Product }) {
   const [m, setM] = useState<MarketIntel | null>(null)
+  const [job, setJob] = useState<MarketJob | null>(null)
   const [loaded, setLoaded] = useState(false)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [showSources, setShowSources] = useState(false)
 
   useEffect(() => {
+    let alive = true
+    let timer: number | undefined
+    const loadMarket = () => marketApi.getMarket(product.id).then((x) => alive && setM(x)).catch(() => alive && setM(null))
+    const poll = async () => {
+      const j = await marketApi.getStatus(product.id).catch(() => null)
+      if (!alive) return
+      setJob(j)
+      if (j?.status === 'running') timer = window.setTimeout(poll, 2000)
+      else await loadMarket()
+      if (alive) setLoaded(true)
+    }
     setLoaded(false)
-    marketApi.getMarket(product.id).then(setM).catch(() => setM(null)).finally(() => setLoaded(true))
+    loadMarket().then(poll)
+    return () => {
+      alive = false
+      window.clearTimeout(timer)
+    }
   }, [product.id])
 
-  async function research() {
-    setBusy(true)
-    setError(null)
-    try {
-      setM(await marketApi.buildMarket(product.id))
-    } catch (e) {
-      setError((e as Error).message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const action = (
-    <button className={`btn ${m ? '' : 'btn-primary'}`} disabled={busy || !product.variants.length} onClick={research}>
-      {busy ? 'Researching…' : m ? 'Refresh' : 'Research market'}
-    </button>
-  )
+  const busy = job?.status === 'running'
+  const stepIdx = busy && job?.step ? job.steps.indexOf(job.step) : -1
 
   return (
-    <Panel
-      title="Market intelligence"
-      subtitle="Live web research with Keenable: competitors, current prices, complaints, standard features and gaps. Drex sees this context when the panel runs."
-      action={action}
-    >
-      {busy && (
-        <div className="run-progress">
-          <div className="row"><span>Searching the web and reading reviews… (~30–60 s)</span></div>
+    <Panel title="Market intelligence">
+      {busy && job && (
+        <div className="market-progress">
+          <div className="analyze-steps">
+            {job.steps.map((st, i) => (
+              <span key={st} className={`astep ${i < stepIdx ? 'done' : i === stepIdx ? 'active' : ''}`}>
+                <span className="astep-dot">{i < stepIdx ? '✓' : i + 1}</span>
+                {STEP_LABEL[st] ?? label(st)}
+              </span>
+            ))}
+          </div>
           <div className="progress indeterminate"><div /></div>
         </div>
       )}
-      {error && <p className="error">{error}</p>}
-      {loaded && !m && !busy && <p className="muted">No research yet. Run it to ground the panel in today's market.</p>}
-      {m && !busy && (
+      {job?.status === 'error' && <p className="error">Market research failed: {job.error}</p>}
+      {loaded && !m && !busy && job?.status !== 'error' && (
+        <p className="muted">No research yet. It runs automatically the next time you run a test.</p>
+      )}
+      {m && (
         <div className="market">
-          <p className="market-summary">
-            <span className="badge">{m.category}</span> {m.summary}
-          </p>
-
           <div className="run-grid">
             <div className="run-fact"><div className="muted small">Market low</div><div className="fact-v">{money(m.price_range.low, m.price_range.currency)}</div></div>
             <div className="run-fact"><div className="muted small">Median</div><div className="fact-v">{money(m.price_range.median, m.price_range.currency)}</div></div>

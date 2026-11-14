@@ -1,8 +1,10 @@
 import { Fragment, useMemo, useState } from 'react'
-import { api, type Product, type Run, type RunDecision, type RunPersona } from './api'
+import { type Product, type Run, type RunDecision, type RunPersona } from './api'
+import { useLiveRun } from './LiveRun'
+import MarketPanel from './MarketPanel'
 import { Panel, VariantTag, label, pct } from './ui'
 
-type View = 'overview' | 'segments' | 'personas'
+type View = 'overview' | 'segments' | 'personas' | 'competitors'
 
 // Display order for segment groups (anything not listed sorts alphabetically).
 const GROUP_ORDER: Record<string, string[]> = {
@@ -13,6 +15,10 @@ const GROUP_ORDER: Record<string, string[]> = {
   location_type: ['urban', 'suburban', 'rural'],
 }
 
+// "<35k" -> "<$35k income", "35-75k" -> "$35–75k income" (annual household income, USD)
+const income = (band: string | null) => (band ? `${band.replace(/(\d+)/, '$$$1').replace('-', '–')} income` : null)
+const opt = (s: string | null | undefined) => (s ? label(s) : '—')
+
 const pts = (x: number, d = 1) => `${x >= 0 ? '+' : '−'}${Math.abs(x * 100).toFixed(d)} pts`
 
 /** Results of one test (panel run) for a product. */
@@ -22,24 +28,11 @@ export default function TestResults(props: {
   title: string
   date: string
   onBack: () => void
-  onNewRun: (r: Run) => void
+  onNewRun: (runId: string) => void
 }) {
   const { product, run, title, date, onBack, onNewRun } = props
   const [view, setView] = useState<View>('overview')
-  const [rerunning, setRerunning] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  async function rerun() {
-    setRerunning(true)
-    setError(null)
-    try {
-      onNewRun(await api.createRun(product.id))
-    } catch (e) {
-      setError((e as Error).message)
-    } finally {
-      setRerunning(false)
-    }
-  }
+  const live = useLiveRun(product, onNewRun, run.stats.market_context ?? true)
 
   if (!run.analysis) {
     return (
@@ -64,8 +57,7 @@ export default function TestResults(props: {
           <p className="sub">
             {date && `${date} · `}
             {run.variants.length} variants · {run.personas.length} personas · {s.ok} decisions
-            {s.failed > 0 && ` (${s.failed} failed)`} · {s.wall_s.toFixed(1)} s · median latency{' '}
-            {s.median_latency_ms != null ? `${Math.round(s.median_latency_ms)} ms` : '—'} · {s.model}{' '}
+            {s.failed > 0 && ` (${s.failed} failed)`}{' '}
             {s.market_context ? (
               <span className="badge market-on">with live market context</span>
             ) : (
@@ -76,16 +68,22 @@ export default function TestResults(props: {
         <div className="head-actions">
           <button className="btn" onClick={() => exportCsv(product, run)}>Export CSV</button>
           <button className="btn" onClick={() => exportJson(product, run)}>Export JSON</button>
-          <button className="btn btn-primary" disabled={rerunning} onClick={rerun}>
-            {rerunning ? 'Running…' : 'Run again'}
+          <button
+            className="btn btn-primary"
+            disabled={!live.canStart}
+            title={product.variants.length < 2 ? 'The product needs at least two variants' : undefined}
+            onClick={live.start}
+          >
+            {live.running ? 'Running…' : 'Run again'}
           </button>
         </div>
       </div>
-      {error && <p className="error">{error}</p>}
+      {live.overlay}
+      {live.error && <p className="error">{live.error}</p>}
 
       <div className="toolbar">
         <nav className="subtabs">
-          {(['overview', 'segments', 'personas'] as View[]).map((v) => (
+          {(['overview', 'segments', 'personas', 'competitors'] as View[]).map((v) => (
             <button key={v} className={view === v ? 'active' : ''} onClick={() => setView(v)}>{label(v)}</button>
           ))}
         </nav>
@@ -97,6 +95,7 @@ export default function TestResults(props: {
       {view === 'overview' && <Overview run={run} />}
       {view === 'segments' && <Segments run={run} />}
       {view === 'personas' && <Personas run={run} />}
+      {view === 'competitors' && <MarketPanel product={product} />}
     </div>
   )
 }
@@ -147,8 +146,7 @@ function Overview({ run }: { run: Run }) {
             {pts(topChallenger.abs_lift)} (95% CI {pts(topChallenger.ci_low)} to {pts(topChallenger.ci_high)}), with a{' '}
             {pct(topChallenger.prob_better, 0)} probability of being better.
           </>
-        ) : null}{' '}
-        Simulated purchase intent from a synthetic panel: it shows direction, not real conversion rates.
+        ) : null}
       </div>
 
       <div className="kpis">
@@ -179,10 +177,10 @@ function Overview({ run }: { run: Run }) {
       </div>
 
       <div className="grid-2">
-        <Panel title="Why shoppers don't buy" subtitle="Top reason among personas who would consider or reject">
+        <Panel title="Why shoppers don't buy">
           <SkipReasons run={run} />
         </Panel>
-        <Panel title="Propensity by price sensitivity" subtitle="Where each variant wins and loses">
+        <Panel title="Propensity by price sensitivity">
           <SegmentBars run={run} dim="price_sensitivity" />
         </Panel>
       </div>
@@ -207,7 +205,6 @@ function Segments({ run }: { run: Run }) {
   return (
     <Panel
       title="Propensity by segment"
-      subtitle="Mean purchase propensity per variant within each group"
       action={
         <select className="select" value={dim} onChange={(e) => setDim(e.target.value)}>
           {dims.map((d) => <option key={d} value={d}>{label(d)}</option>)}
@@ -349,13 +346,12 @@ function Personas({ run }: { run: Run }) {
   }, [run])
   const rows = all
     .filter((r) => !onlyLow || r.low)
-    .filter((r) => !query || `${r.p.id} ${r.p.label} ${r.p.shopping_style}`.toLowerCase().includes(query.toLowerCase()))
+    .filter((r) => !query || `${r.p.id} ${r.p.label} ${r.p.shopping_style ?? ''}`.toLowerCase().includes(query.toLowerCase()))
     .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
 
   return (
     <Panel
       title="Persona decisions"
-      subtitle="Sorted by largest change vs control. Click a row for the persona's profile and Drex probabilities."
       flush
     >
       <div className="table-tools">
@@ -366,8 +362,8 @@ function Personas({ run }: { run: Run }) {
         </label>
         <span className="muted small push">{rows.length} of {all.length}</span>
       </div>
-      <div className="table-wrap tall">
-        <table className="data">
+      <div className="table-wrap">
+        <table className="data persona-table">
           <thead>
             <tr>
               <th>Persona</th>
@@ -381,12 +377,12 @@ function Personas({ run }: { run: Run }) {
             {rows.map(({ p, ds, delta, low }) => (
               <Fragment key={p.id}>
                 <tr className={`clickable ${open === p.id ? 'is-open' : ''}`} onClick={() => setOpen(open === p.id ? null : p.id)}>
-                  <td>
+                  <td className="wrap persona-cell">
                     <span className="chev">{open === p.id ? '▾' : '▸'}</span>
                     <span className="mono muted">{p.id}</span> {p.label}
                     {low && <span className="badge warn">Low confidence</span>}
                   </td>
-                  <td className="muted">{label(p.shopping_style)} · {p.income_band}</td>
+                  <td className="wrap muted">{[p.shopping_style && label(p.shopping_style), income(p.income_band)].filter(Boolean).join(' · ') || '—'}</td>
                   {vids.map((v) => <td key={v} className="num">{ds[v] ? <Prob x={ds[v].p_buy} /> : '—'}</td>)}
                   <td className={`num ${delta >= 0 ? 'pos' : 'neg'}`}>{delta >= 0 ? '+' : '−'}{Math.abs(delta).toFixed(2)}</td>
                   {vids.map((v) => <td key={v}>{ds[v] ? <Outcome d={ds[v]} /> : '—'}</td>)}
@@ -412,13 +408,13 @@ function PersonaDetail({ p, ds, vids }: { p: RunPersona; ds: Record<string, RunD
     <div className="detail-grid" style={{ gridTemplateColumns: `1.3fr repeat(${vids.length}, 1fr)` }}>
       <div>
         <div className="detail-k">Profile</div>
-        <p>{p.bio}</p>
+        <p>{p.bio ?? <span className="muted">No bio.</span>}</p>
         <dl className="kv">
-          <dt>Age</dt><dd>{p.age_band}</dd>
-          <dt>Income</dt><dd>{p.income_band}</dd>
-          <dt>Household</dt><dd>{label(p.household)}</dd>
-          <dt>Price sensitivity</dt><dd>{label(p.price_sensitivity)}</dd>
-          <dt>Priorities</dt><dd>{p.priorities.map(label).join(', ')}</dd>
+          <dt>Age</dt><dd>{p.age_band ?? '—'}</dd>
+          <dt>Household income</dt><dd>{p.income_band ? `${income(p.income_band)!.replace(' income', '')} a year` : '—'}</dd>
+          <dt>Household</dt><dd>{opt(p.household)}</dd>
+          <dt>Price sensitivity</dt><dd>{opt(p.price_sensitivity)}</dd>
+          <dt>Priorities</dt><dd>{p.priorities.length ? p.priorities.map(label).join(', ') : '—'}</dd>
           <dt>Dealbreakers</dt><dd>{p.dealbreakers.length ? p.dealbreakers.join(', ') : '—'}</dd>
         </dl>
       </div>

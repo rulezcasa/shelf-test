@@ -1416,5 +1416,31 @@
     "dealbreakers": [],
     "bio": "A 70-year-old male retiree in a rural area of the US South who is retired and lives with a spouse. Household income $35\u201375k; medium comfort with technology. Often buys on impulse when something catches their eye. Cares most about design, brand and convenience.",
     "weight": 1.0
+  },
+  {
+    "id": "P061",
+    "label": "66, urban retired nurse, single",
+    "age_band": "65+",
+    "gender": "female",
+    "location_type": "urban",
+    "region": null,
+    "household": "single",
+    "income_band": null,
+    "occupation": "retired nurse",
+    "tech_savviness": "low",
+    "shopping_style": "convenience_first",
+    "price_sensitivity": null,
+    "priorities": [
+      "quality",
+      "convenience",
+      "support"
+    ],
+    "dealbreakers": [
+      "complicated setup"
+    ],
+    "bio": "A 66-year-old retired nurse living in a small city with her dog, she spends her time volunteering, gardening, and staying connected with family. She prefers in-person shopping and values clear explanations and good service over endless choices. She is open to technology but requires guidance and dislikes products that assume smartphone proficiency.",
+    "weight": 1.0,
+    "source": "interview",
+    "source_file": "interview1.mp3"
   }
 ]

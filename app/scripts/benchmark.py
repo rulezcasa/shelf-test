@@ -12,8 +12,6 @@ import argparse
 import asyncio
 import json
 import sys
-import time
-from datetime import datetime
 from pathlib import Path
 
 import matplotlib
@@ -25,12 +23,10 @@ import pandas as pd  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src import config  # noqa: E402
-from src.model import drex_client, llm_client  # noqa: E402
-from src.model.analysis import decision_frame, lift, product_summary  # noqa: E402
+from src.api import benchmarks  # noqa: E402
 from src.model.panel import load_personas  # noqa: E402
-from src.models import Attribute, Decision, Variant  # noqa: E402
+from src.models import Attribute, Variant  # noqa: E402
 
-OUT_DIR = config.DATA_DIR / "benchmarks"
 COLORS = {"drex": "#2a6fdb", "llm": "#e07a1f"}
 
 
@@ -49,80 +45,14 @@ def canonical_variants() -> list[Variant]:
 
 # ---- running -----------------------------------------------------------------
 
-async def run_model(name: str, personas, variants, repeat: int) -> tuple[list[Decision], dict]:
-    """All pairs once, plus `repeat` extra passes on the first 10 pairs for consistency."""
-    pairs = [(p, v) for p in personas for v in variants]
-    jobs = [(p, v, 0) for p, v in pairs] + [(p, v, r) for r in range(1, repeat + 1) for p, v in pairs[:10]]
-    sem = asyncio.Semaphore(config.DREX_CONCURRENCY if name == "drex" else config.LLM_CONCURRENCY)
-    out, errors, usage = [], [], {"prompt_tokens": 0, "completion_tokens": 0}
-    mod = drex_client if name == "drex" else llm_client
-    t0 = time.perf_counter()
-    async with mod.client() as http:
-        async def one(p, v, r):
-            async with sem:
-                try:
-                    if name == "drex":
-                        d = await drex_client.evaluate(http, p, v)
-                    else:
-                        d, u = await llm_client.evaluate(http, p, v)
-                        for k in usage:
-                            usage[k] += u.get(k, 0)
-                    out.append({"model": name, "repeat": r, **d.model_dump()})
-                except Exception as e:
-                    errors.append(str(e)[:300])
-            print(f"\r  {name}: {len(out) + len(errors)}/{len(jobs)}", end="", flush=True)
-        await asyncio.gather(*(one(*j) for j in jobs))
+async def run_model(name: str, personas, variants, repeat: int):
+    def progress(done, total, failed):
+        print(f"\r  {name}: {done}/{total}" + (f" ({failed} failed)" if failed else ""), end="", flush=True)
+    out, st = await benchmarks.run_model(name, personas, variants, repeat, on_progress=progress)
     print()
-    wall = time.perf_counter() - t0
-    for e in errors[:3]:
+    for e in st["errors"][:3]:
         print("   error:", e)
-    first = [d for d in out if d["repeat"] == 0]
-    return out, {"wall_s": wall, "calls": len(jobs), "failed": len(errors),
-                 "throughput_per_s": len(first) / wall if wall else None, **usage}
-
-
-# ---- metrics -----------------------------------------------------------------
-
-def metrics(df: pd.DataFrame, run_stats: dict, personas) -> dict:
-    res = {}
-    main = df[df["repeat"] == 0]
-    for m, g in main.groupby("model"):
-        dec = [Decision(**{k: (None if pd.isna(r[k]) else r[k]) if not isinstance(r[k], (dict, list)) else r[k] for k in Decision.model_fields}) for r in g.to_dict("records")]
-        frame = decision_frame(dec, personas)
-        lat = g.latency_ms.dropna()
-        st = run_stats[m]
-        cost = None
-        if m == "llm":
-            cost = (st["prompt_tokens"] * config.LLM_PRICE_IN + st["completion_tokens"] * config.LLM_PRICE_OUT) / 1e6
-        rep = df[(df.model == m)]
-        cons = None
-        if rep["repeat"].max() > 0:
-            piv = rep.groupby(["persona_id", "variant_id"]).p_buy.agg(["std", "count"])
-            cons = float(piv[piv["count"] > 1]["std"].mean())
-        res[m] = {
-            "summary": product_summary(frame).to_dict("records"),
-            "lift": lift(frame).to_dict("records"),
-            "latency_median_ms": float(lat.median()), "latency_p95_ms": float(lat.quantile(0.95)),
-            "wall_s": st["wall_s"], "throughput_per_s": st["throughput_per_s"],
-            "calls": st["calls"], "failed": st["failed"],
-            "tokens_in": st.get("prompt_tokens"), "tokens_out": st.get("completion_tokens"),
-            "cost_usd": cost, "repeat_std": cons,
-            "skip_reasons": g[g.outcome != "buy"].skip_reason.value_counts(normalize=True).to_dict(),
-        }
-    if {"drex", "llm"} <= set(main.model):
-        w = main.pivot_table(index=["persona_id", "variant_id"], columns="model", values="p_buy").dropna()
-        o = main.pivot_table(index=["persona_id", "variant_id"], columns="model", values="outcome", aggfunc="first").dropna()
-        pref = {m: main[main.model == m].pivot(index="persona_id", columns="variant_id", values="p_buy").idxmax(axis=1)
-                for m in ("drex", "llm")}
-        common = pref["drex"].index.intersection(pref["llm"].index)
-        res["agreement"] = {
-            "p_buy_pearson": float(w.drex.corr(w.llm)),
-            "p_buy_spearman": float(w.drex.rank().corr(w.llm.rank())),
-            "mean_abs_diff": float((w.drex - w.llm).abs().mean()),
-            "outcome_agreement": float((o.drex == o.llm).mean()),
-            "preferred_variant_agreement": float((pref["drex"][common] == pref["llm"][common]).mean()),
-        }
-    return res
+    return out, st
 
 
 # ---- plotting ----------------------------------------------------------------
@@ -248,13 +178,9 @@ def main():
             rows += r
             run_stats[m] = st
         df = pd.DataFrame(rows)
-        out = OUT_DIR / datetime.now().strftime("%Y%m%d-%H%M%S")
-        out.mkdir(parents=True, exist_ok=True)
-        (out / "decisions.json").write_text(json.dumps(
-            {"title": title, "llm_model": config.LLM_MODEL, "drex_model": config.DREX_MODEL,
-             "run_stats": run_stats, "decisions": rows}, indent=1))
+        out = benchmarks.save(title, rows, run_stats, personas, a.product)
 
-    met = metrics(df, run_stats, personas)
+    met = benchmarks.metrics(df, run_stats, personas)
     (out / "summary.json").write_text(json.dumps(met, indent=1, default=float))
     plot(df, met, personas, out / "benchmark.png", title)
 

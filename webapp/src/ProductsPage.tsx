@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { api, marketApi, type Attribute, type Product, type Run, type Variant } from './api'
+import { api, type Attribute, type Product, type Variant } from './api'
+import { useLiveRun } from './LiveRun'
 import ProductList from './ProductList'
 import { Panel, VariantTag, label } from './ui'
-import MarketPanel from './MarketPanel'
 
 type Pending = { key: string; name: string; error?: string }
 
@@ -16,10 +16,7 @@ function ProductIndex({ onOpen }: { onOpen: (p: Product) => void }) {
   return (
     <div className="setup">
       <div className="page-head">
-        <div>
-          <h1>Products</h1>
-          <p className="sub">Each product holds its variant documents. Open one to see its extracted fields and run tests.</p>
-        </div>
+        <h1>Products</h1>
       </div>
       <ProductPicker onOpen={onOpen} />
     </div>
@@ -50,14 +47,12 @@ function ProductDetail({ pid, go }: { pid: string; go: (hash: string) => void })
       <div className="page-head">
         <div>
           <h1>{product.name}</h1>
-          <p className="sub">Upload two or more variants of the product page. The first document is the control.</p>
         </div>
         <button className="btn" onClick={() => go(`#/tests/${product.id}`)}>View tests</button>
       </div>
       <VariantsPanel product={product} onChange={setProduct} />
       {n > 0 && <CompareEditor product={product} onChange={setProduct} />}
-      {n > 0 && <MarketPanel product={product} />}
-      {n > 1 && <RunPanel product={product} onRunComplete={(r) => go(`#/tests/${product.id}/${r.id}`)} />}
+      {n > 1 && <RunPanel product={product} onRunComplete={(runId) => go(`#/tests/${product.id}/${runId}`)} />}
     </div>
   )
 }
@@ -128,9 +123,8 @@ function VariantsPanel({ product, onChange }: { product: Product; onChange: (p: 
     }
   }
 
-  const n = product.variants.length
   return (
-    <Panel title="Variant documents" subtitle="PDF spec sheets, landing pages or pricing sheets, one per variant. Each is extracted by NDI on upload.">
+    <Panel title="Variant documents">
       <div
         className="dropzone"
         onClick={() => fileRef.current?.click()}
@@ -155,7 +149,6 @@ function VariantsPanel({ product, onChange }: { product: Product; onChange: (p: 
         <div>
           <strong>Click to upload</strong> or drag and drop
         </div>
-        <div className="muted small">PDF, one file per variant</div>
       </div>
 
       {pending.length > 0 && (
@@ -181,11 +174,6 @@ function VariantsPanel({ product, onChange }: { product: Product; onChange: (p: 
         </ul>
       )}
 
-      <div className="panel-foot">
-        <span className="muted small">
-          {n < 2 ? `Add at least ${2 - n} more document${n === 1 ? '' : 's'}.` : `${n} variants ready.`}
-        </span>
-      </div>
     </Panel>
   )
 }
@@ -336,7 +324,6 @@ function CompareEditor({ product, onChange }: { product: Product; onChange: (p: 
   return (
     <Panel
       title="Extracted details"
-      subtitle="Fields NDI found in each document. Click any cell or field name to edit; changes save automatically."
       action={
         <span className={error ? 'error small' : 'muted small'}>
           {saving ? 'Saving…' : error ?? (savedOnce ? 'All changes saved' : '')}
@@ -427,67 +414,41 @@ function CompareEditor({ product, onChange }: { product: Product; onChange: (p: 
 
 /* ---------------- step 3: run the panel through Drex ---------------- */
 
-function RunPanel({ product, onRunComplete }: { product: Product; onRunComplete: (r: Run) => void }) {
-  const [personas, setPersonas] = useState<number | null>(null)
-  const [running, setRunning] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+function RunPanel({ product, onRunComplete }: { product: Product; onRunComplete: (runId: string) => void }) {
   const [useMarket, setUseMarket] = useState(true)
-  const variants = product.variants.length
-  const total = personas != null ? personas * variants : null
-
-  useEffect(() => {
-    api.listPersonas().then((ps) => setPersonas(ps.length)).catch((e) => setError(e.message))
-  }, [])
-
-  async function runPanel() {
-    setRunning(true)
-    setError(null)
-    try {
-      onRunComplete(await marketApi.createRun(product.id, useMarket))
-    } catch (e) {
-      setError((e as Error).message)
-      setRunning(false)
-    }
-  }
+  const { personas, running, error, start, overlay, canStart } = useLiveRun(product, onRunComplete, useMarket)
+  const variants = product.variants.map((v) => v.variant_id)
+  const planned = personas ? personas.length * variants.length : null
 
   return (
-    <Panel title="Run panel" subtitle="Every persona evaluates every variant through Drex.">
+    <Panel title="Run a test">
+      {overlay}
       <div className="run-grid">
         <div className="run-fact">
           <div className="muted small">Personas</div>
-          <div className="fact-v">{personas ?? '—'}</div>
+          <div className="fact-v">{personas?.length ?? '—'}</div>
         </div>
         <div className="run-fact">
           <div className="muted small">Variants</div>
-          <div className="fact-v">{variants}</div>
+          <div className="fact-v">{variants.length}</div>
         </div>
         <div className="run-fact">
           <div className="muted small">Decisions</div>
-          <div className="fact-v">{total ?? '—'}</div>
+          <div className="fact-v">{planned ?? '—'}</div>
         </div>
         <div className="run-fact">
           <div className="muted small">Model</div>
           <div className="fact-v mono">drex-latest</div>
         </div>
       </div>
-      {running && (
-        <div className="run-progress">
-          <div className="row">
-            <span>Running {total ?? ''} decisions through Drex…</span>
-          </div>
-          <div className="progress indeterminate">
-            <div />
-          </div>
-        </div>
-      )}
       {error && <p className="error mt">{error}</p>}
       <div className="panel-foot">
         <label className="switch small">
           <input type="checkbox" checked={useMarket} onChange={(e) => setUseMarket(e.target.checked)} />
           Give Drex the live market context (if researched)
         </label>
-        <button className="btn btn-primary" disabled={running || !personas} onClick={runPanel}>
-          {running ? 'Running…' : 'Run panel'}
+        <button className="btn btn-primary" disabled={!canStart} onClick={start}>
+          {running ? 'Running…' : 'Run test'}
         </button>
       </div>
     </Panel>

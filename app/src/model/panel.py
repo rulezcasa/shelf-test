@@ -18,8 +18,11 @@ def load_personas(limit: int | None = None) -> list[Persona]:
 
 async def run_panel(personas: list[Persona], variants: list[Variant], on_progress=None,
                     market=None) -> dict:
-    """market: optional MarketIntel; each variant then sees its own market context."""
-    """Returns {"decisions": [Decision...], "stats": {...}}. A failed pair is logged and skipped."""
+    """Returns {"decisions": [Decision...], "stats": {...}}. A failed pair is logged and skipped.
+
+    on_progress(done, total, decision_or_None) is called after every pair (None = that pair failed).
+    market: optional MarketIntel; each variant then sees its own market context.
+    """
     sem = asyncio.Semaphore(config.DREX_CONCURRENCY)
     pairs = [(p, v) for p in personas for v in variants]
     total, done, failures = len(pairs), 0, []
@@ -29,16 +32,18 @@ async def run_panel(personas: list[Persona], variants: list[Variant], on_progres
     async with drex_client.client() as http:
         async def one(p: Persona, v: Variant):
             nonlocal done
+            d = None
             async with sem:
                 try:
                     ctx = market.decision_context(v.variant_id) if market else None
-                    decisions.append(await drex_client.evaluate(http, p, v, ctx))
+                    d = await drex_client.evaluate(http, p, v, ctx)
+                    decisions.append(d)
                 except Exception as e:
                     log.error("pair %s x %s failed: %s", p.id, v.variant_id, e)
                     failures.append({"persona_id": p.id, "variant_id": v.variant_id, "error": str(e)})
             done += 1
             if on_progress:
-                on_progress(done, total)
+                on_progress(done, total, d)
 
         await asyncio.gather(*(one(p, v) for p, v in pairs))
 

@@ -95,7 +95,7 @@ async def _plan(product: Product) -> dict:
     return {"category": out.get("category") or product.name, "queries": queries}
 
 
-async def _research(queries: dict[str, str]) -> tuple[list[dict], list[dict], int]:
+async def _research(queries: dict[str, str], step=lambda _: None) -> tuple[list[dict], list[dict], int]:
     year_ago = f"{datetime.now().year - 1}-01-01"
     async with kc.client() as http:
         results = await asyncio.gather(*(kc.search(http, q, max_results=8, published_after=year_ago)
@@ -109,6 +109,7 @@ async def _research(queries: dict[str, str]) -> tuple[list[dict], list[dict], in
                 sources.append({"id": len(sources) + 1, "topic": topic, **r})
         # Read the top review/complaint pages in full for real customer language.
         to_read = [s for s in sources if s["topic"] == "complaints"][:3]
+        step("read")
         pages = await asyncio.gather(*(kc.fetch(http, s["url"], max_chars=5000) for s in to_read),
                                      return_exceptions=True)
     read = [{"source_id": s["id"], "content": p["content"]} for s, p in zip(to_read, pages)
@@ -148,11 +149,16 @@ Respond as JSON:
     return await llm_client.chat_json([{"role": "user", "content": msg}], max_tokens=2500)
 
 
-async def build(product: Product) -> MarketIntel:
+async def build(product: Product, on_step=None) -> MarketIntel:
+    """on_step(name) is called as each stage (plan, search, read, analyze) begins."""
+    step = on_step or (lambda _: None)
+    step("plan")
     plan = await _plan(product)
-    sources, pages, used = await _research(plan["queries"])
+    step("search")
+    sources, pages, used = await _research(plan["queries"], step)
     if not sources:
         raise kc.KeenableError("Keenable returned no results for any query")
+    step("analyze")
     a = await _analyze(product, plan["category"], sources, pages)
     by_id = {s["id"]: s["url"] for s in sources}
     competitors = []

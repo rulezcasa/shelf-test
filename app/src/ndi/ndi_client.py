@@ -1,5 +1,6 @@
 """Thin NDI client over the Nace console API: upload a local file, run an extract job, wait for the result."""
 import json
+import re
 import time
 import uuid
 from pathlib import Path
@@ -23,9 +24,19 @@ def _client() -> httpx.Client:
     )
 
 
+def describe_error(service: str, r: httpx.Response) -> str:
+    """The raw error as the server sent it: status, notable headers, and the body (HTML pages reduced to <title>)."""
+    head = f"{service} {r.request.method} {r.request.url.path} -> {r.status_code} {r.reason_phrase}"
+    hdrs = [f"{k}: {r.headers[k]}" for k in ("server", "x-vercel-mitigated", "retry-after", "x-vercel-id") if k in r.headers]
+    body = r.text or ""
+    title = re.search(r"<title>(.*?)</title>", body, re.S)
+    shown = f"HTML page <title>{title.group(1).strip()}</title>" if title else body[:500]
+    return f"{head} [{'; '.join(hdrs)}] {shown}".replace(" [] ", " ")
+
+
 def _check(r: httpx.Response) -> dict:
     if r.status_code >= 400:
-        raise NDIError(f"NDI {r.request.method} {r.request.url.path} -> {r.status_code}: {r.text}")
+        raise NDIError(describe_error("NDI", r))
     return r.json()
 
 
@@ -35,7 +46,7 @@ def _wait(client: httpx.Client, job: dict, timeout_s: float) -> dict:
         if time.monotonic() > deadline:
             raise NDIError(f"NDI job {job['job_id']} timed out (last status: {job.get('status')})")
         time.sleep(2)
-        job = _check(client.get(f"/v1/jobs/{job['job_id']}"))
+        job = _check(client.get(f"/v1/documents/jobs/{job['job_id']}"))
     if job["status"] != "succeeded":
         raise NDIError(f"NDI job {job['job_id']} {job['status']}: {job.get('error') or job.get('result_error')}")
     return job
@@ -60,6 +71,20 @@ def upload(path: Path, timeout_s: float = 120) -> dict:
         job = _wait(client, _check(r), timeout_s)
     file = job["result"]["file"]
     return {"type": "workspace_file", "workspace_id": file["workspace_id"], "file_id": file["file_id"]}
+
+
+def parse(source: dict, timeout_s: float = 600) -> dict:
+    """POST /v1/documents/parse (markdown) and wait. Returns the finished job's `result`.
+    For audio/video the transcript is only inlined when the job is read by id, so we re-read it."""
+    with _client() as client:
+        job = _check(client.post(
+            "/v1/documents/parse",
+            params={"wait_seconds": 120},
+            json={"source": source, "output": {"formats": ["markdown"]}},
+        ))
+        job = _wait(client, job, timeout_s)
+        job = _check(client.get(f"/v1/documents/jobs/{job['job_id']}"))
+    return job["result"]
 
 
 def extract(source: dict, schema: dict, instructions: str, timeout_s: float = 240) -> dict:
