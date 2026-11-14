@@ -373,3 +373,13 @@ Commit after each milestone. If time is short, M5 can drop the heatmap and the p
 - Fail loudly on `401/402/422` with the response body — those are config bugs, not transient.
 - Keep prompts (question `instructions` and `criteria`) in one place (`drex_client.py` constants) so they can be tuned quickly.
 - Don't add score questions, head-to-head questions, or LLM calls unless asked.
+
+---
+
+## 12. Change log (what we actually built)
+
+- **Data source pivot:** we use the MarketTwin data pack (`../MarketTwin_Hackathon_Data_Pack`, `DATA_PACK_DIR`) instead of generated personas: 1,000 `Customer`s (headphone preferences) × `Product`s shaped like `canonical_products.json`. Demographics are for reporting only; Drex sees `Customer.decision_inputs()` only.
+- **Outcomes:** buy (`p_buy >= BUY_THRESHOLD`, 0.6) / consider (`>= CONSIDER_THRESHOLD`, 0.35) / reject. Skip reasons are headphone-specific (see `drex_client.SKIP_REASONS`).
+- **Baseline:** `src/baseline.py` is the transparent heuristic from `experiment_config.json`. It is also the `MOCK_DREX` backend, and every run reports Drex-vs-baseline agreement.
+- **Decision model (M4):** `src/panel.py` (`run_panel` → Drex + baseline decisions, saved to `data/runs/`), `src/analysis.py` (`analyze()` → summary with bootstrap CI and preference share, paired lift, segments incl. `price_band`/`budget_band`/`primary_use_case`, skip reasons, customer table, agreement). CLI: `python app/scripts/run_panel.py [--mock] [-n N] [--products products.json]`.
+- **NDI handoff:** the NDI pipeline (partner) should output a JSON list of `Product` records; pass it via `--products`.
